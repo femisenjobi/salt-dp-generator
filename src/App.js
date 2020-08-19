@@ -45,7 +45,7 @@ function App() {
                 <button onClick={uploadWidget} className="upload-button btn btn-primary">
                   Upload Image
                 </button>
-                <a href={image ? image : '#'} download className={`btn btn-primary ${image ? '' : 'disabled'} ml-3`} disabled={image && !loading}>
+                <a href={image ? image : '#'} download={'MySALTDP.jpg'} className={`btn btn-primary ${image ? '' : 'disabled'} ml-3`} target="_blank">
                   Download
                 </a>
               </div>
