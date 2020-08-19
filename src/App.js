@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import moment from 'moment';
 import logo from './logo.jpeg';
 import placeHolder from './sample.jpeg';
 import './App.css';
@@ -8,11 +9,12 @@ function App() {
   const [loading, setloading] = useState(false);
   const uploadWidget = () => {
     setloading(true);
+    const bg = moment().isAfter('2020-08-22') ? 'salt-round' : 'salt-before';
     window.cloudinary.openUploadWidget(
       { cloud_name: 'dmlyic7tt', upload_preset: 'ml_default'},
       function(error, result) {
         console.log(result);
-        setImage(`https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${result[0].public_id},w_510,h_510,c_fill,x_-250,y_225,r_max/salt-round.jpg`);
+        setImage(`https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${result[0].public_id},w_510,h_510,c_fill,x_-250,y_225,r_max/${bg}.jpg`);
         setloading(false)
       },
     );
@@ -37,19 +39,15 @@ function App() {
               <img src={image || placeHolder} alt="logo" className="img-responsive" style={{height: '400px'}} />
             }
           </div>
-          {image && !loading &&
-            <div className="row d-flex justify-content-center mb-3">
-              <a href={image} download className="btn btn-primary">
-                Download Image
-              </a>
-            </div>
-          }
           <div className="row d-flex justify-content-center">
             <div className="main">
-              <div className="upload text-center">
+              <div className="upload d-flex justify-content-around">
                 <button onClick={uploadWidget} className="upload-button btn btn-primary">
                   Upload Image
                 </button>
+                <a href={image ? image : '#'} download className={`btn btn-primary ${image ? '' : 'disabled'} ml-3`} disabled={image && !loading}>
+                  Download
+                </a>
               </div>
             </div>
           </div>
