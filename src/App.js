@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import moment from 'moment';
 import logo from './logo.jpeg';
 import placeHolder from './sample.jpeg';
 import './App.css';
@@ -9,12 +8,10 @@ function App() {
   const [loading, setloading] = useState(false);
   const uploadWidget = () => {
     setloading(true);
-    const bg = moment().isAfter('2020-08-22') ? 'salt-round' : 'salt-before';
     window.cloudinary.openUploadWidget(
       { cloud_name: 'dmlyic7tt', upload_preset: 'ml_default'},
       function(error, result) {
-        console.log(result);
-        setImage(`https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${result[0].public_id},w_510,h_510,c_fill,x_-250,y_225,r_max/${bg}.jpg`);
+        setImage(`https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${result[0].public_id},w_400,h_400,c_fill,x_-272,y_-137/bday-three_wiv6qg.jpg`);
         setloading(false)
       },
     );
@@ -45,7 +42,7 @@ function App() {
                 <button onClick={uploadWidget} className="upload-button btn btn-primary">
                   Upload Image
                 </button>
-                <a href={image ? image : '#'} download={'MySALTDP.jpg'} className={`btn btn-primary ${image ? '' : 'disabled'} ml-3`} target="_blank">
+                <a href={image ? image : '#'} download={'MySALTDP.jpg'} className={`btn btn-primary ${image ? '' : 'disabled'} ml-3`} target="_blank" rel="noopener noreferrer">
                   Download
                 </a>
               </div>
