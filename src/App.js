@@ -11,7 +11,7 @@ function App() {
     window.cloudinary.openUploadWidget(
       { cloud_name: 'dmlyic7tt', upload_preset: 'ml_default'},
       function(error, result) {
-        setImage(`https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${result[0].public_id},w_400,h_400,c_fill,x_-272,y_-137/bday-three_wiv6qg.jpg`);
+        setImage(`https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${result[0].public_id},w_410,h_410,c_fill,x_0,y_-170,r_max/v1614867226/ichoosechallenge.jpg`);
         setloading(false)
       },
     );
