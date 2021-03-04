@@ -5,6 +5,7 @@ import './App.css';
 
 function App() {
   const [image, setImage] = useState();
+  const [downloadLink, setDownloadLink] = useState();
   const [loading, setloading] = useState(false);
   const uploadWidget = () => {
     setloading(true);
@@ -12,6 +13,7 @@ function App() {
       { cloud_name: 'dmlyic7tt', upload_preset: 'ml_default'},
       function(error, result) {
         setImage(`https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${result[0].public_id},w_410,h_410,c_fill,x_0,y_-170,r_max/v1614867226/ichoosechallenge.jpg`);
+        setDownloadLink(`https://res.cloudinary.com/dmlyic7tt/image/upload/fl_attachment:my_dp,w_1080,h_1080,c_fill/l_${result[0].public_id},w_410,h_410,c_fill,x_0,y_-170,r_max/v1614867226/ichoosechallenge.jpg`);
         setloading(false)
       },
     );
@@ -40,9 +42,9 @@ function App() {
             <div className="main">
               <div className="upload d-flex justify-content-around">
                 <button onClick={uploadWidget} className="upload-button btn btn-primary">
-                  Upload Image
+                  {image ? 'Change Picture' : 'Upload Picture'}
                 </button>
-                <a href={image ? image : '#'} download={'MySALTDP.jpg'} className={`btn btn-primary ${image ? '' : 'disabled'} ml-3`} target="_blank" rel="noopener noreferrer">
+                <a href={downloadLink ? downloadLink : '#'} download={'MySALTDP.jpg'} className={`btn btn-primary ${image ? '' : 'disabled'} ml-3`} target="_blank" rel="noopener noreferrer">
                   Download
                 </a>
               </div>
