@@ -12,8 +12,8 @@ function App() {
     window.cloudinary.openUploadWidget(
       { cloud_name: 'dmlyic7tt', upload_preset: 'ml_default'},
       function(error, result) {
-        setImage(`https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${result[0].public_id},w_410,h_410,c_fill,x_0,y_-170,r_max/v1614867226/ichoosechallenge.jpg`);
-        setDownloadLink(`https://res.cloudinary.com/dmlyic7tt/image/upload/fl_attachment:my_dp,w_1080,h_1080,c_fill/l_${result[0].public_id},w_410,h_410,c_fill,x_0,y_-170,r_max/v1614867226/ichoosechallenge.jpg`);
+        setImage(`https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${result[0].public_id},w_540,h_540,c_fill,x_-0,y_-21/v1614867226/icc-2_ssmpl4.jpg`);
+        setDownloadLink(`https://res.cloudinary.com/dmlyic7tt/image/upload/fl_attachment:my_dp,w_1080,h_1080,c_fill/l_${result[0].public_id},w_540,h_540,c_fill,x_-0,y_-21/v1614867226/icc-2_ssmpl4.jpg`);
         setloading(false)
       },
     );
