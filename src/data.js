@@ -13,7 +13,7 @@ const myData = {
     height: 424,
     xPos: 293,
     yPos: -257,
-    mainImage: 'atf_iptyih',
+    mainImage: 'akp_qaur2j',
     logoImage: 'logo_yku0b6',
     radius: 'max',
   }
