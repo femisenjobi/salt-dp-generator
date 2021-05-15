@@ -1,12 +1,12 @@
 const myData = {
   'salt': {
-    width: 540,
-    height: 540,
-    xPos: -0,
-    yPos: -21,
-    mainImage: 'v1614867226/icc-2_ssmpl4.jpg',
+    width: 365,
+    height: 365,
+    xPos: 314,
+    yPos: 165,
+    mainImage: 'salt_qdelkq',
     logoImage: 'logo_yku0b6',
-    radius: 0,
+    radius: 30,
   },
   'akp': {
     width: 424,
