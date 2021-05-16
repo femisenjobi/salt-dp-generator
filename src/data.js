@@ -1,9 +1,9 @@
 const myData = {
   'salt': {
-    width: 365,
-    height: 365,
-    xPos: 314,
-    yPos: 165,
+    width: 369,
+    height: 367,
+    xPos: 315,
+    yPos: 130,
     mainImage: 'salt_qdelkq',
     logoImage: 'logo_yku0b6',
     radius: 30,
