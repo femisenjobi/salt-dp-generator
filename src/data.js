@@ -16,6 +16,15 @@ const myData = {
     mainImage: 'akp_qaur2j',
     logoImage: 'logo_yku0b6',
     radius: 'max',
+  },
+  'shift': {
+    width: 294,
+    height: 294,
+    xPos: 19,
+    yPos: -241,
+    mainImage: 'paradigm-shift_wpaogg',
+    logoImage: 'logo_yku0b6',
+    radius: 'max',
   }
 }
 
