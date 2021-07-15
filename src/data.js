@@ -6,7 +6,7 @@ const myData = {
     yPos: 143,
     mainImage: 'sal-fin_mgvdaa',
     logoImage: 'logo_yku0b6',
-    radius: 'max,
+    radius: 'max',
   },
   'akp': {
     width: 424,
