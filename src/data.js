@@ -30,9 +30,9 @@ const myData = {
     width: 330,
     height: 330,
     xPos: -140,
-    yPos: -150,
+    yPos: -148,
     mainImage: 'cw2021_ynausc',
-    logoImage: 'wgc-logo_vxs9ut',
+    logoImage: 'wgc-logo',
     radius: 'max',
   }
 }
