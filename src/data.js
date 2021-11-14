@@ -25,6 +25,15 @@ const myData = {
     mainImage: 'paradigm-shift_wpaogg',
     logoImage: 'logo_yku0b6',
     radius: 'max',
+  },
+  'cw2021': {
+    width: 330,
+    height: 330,
+    xPos: -140,
+    yPos: -150,
+    mainImage: 'cw2021_ynausc',
+    logoImage: 'wgc-logo_vxs9ut',
+    radius: 'max',
   }
 }
 
