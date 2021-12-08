@@ -34,6 +34,15 @@ const myData = {
     mainImage: 'cw2021_ynausc',
     logoImage: 'wgc-logo',
     radius: 'max',
+  },
+  'lift': {
+    width: 539,
+    height: 539,
+    xPos: 0,
+    yPos: -35,
+    mainImage: 'LIFT_Badge_mpjdyl',
+    logoImage: 'lift-logo-tex3hz',
+    radius: 'max',
   }
 }
 
