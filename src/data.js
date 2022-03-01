@@ -43,6 +43,15 @@ const myData = {
     mainImage: 'LIFT_Badge_mpjdyl',
     logoImage: 'lift-logo-tex3hz',
     radius: 'max',
+  },
+  'kdg2022': {
+    width: 340,
+    height: 340,
+    xPos: 0,
+    yPos: -40,
+    mainImage: 'kdg-2022',
+    logoImage: 'wgc-logo',
+    radius: 'max',
   }
 }
 
