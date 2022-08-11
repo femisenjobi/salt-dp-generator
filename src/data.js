@@ -52,6 +52,15 @@ const myData = {
     mainImage: 'kdg-2022',
     logoImage: 'wgc-logo',
     radius: 'max',
+  },
+  'lucc2022': {
+    width: 448,
+    height: 448,
+    xPos: -1,
+    yPos: 115,
+    mainImage: 'lucc2022_nxttnm',
+    logoImage: 'plain_pw7uoh',
+    radius: 'max',
   }
 }
 
