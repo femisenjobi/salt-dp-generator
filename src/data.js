@@ -61,6 +61,15 @@ const myData = {
     mainImage: 'lucc2022_nxttnm',
     logoImage: 'plain_pw7uoh',
     radius: 'max',
+  },
+  'focp2022': {
+    width: 380,
+    height: 380,
+    xPos: -265,
+    yPos: 134,
+    mainImage: 'focp2022_yxxnni',
+    logoImage: 'wgc-logo',
+    radius: 'max',
   }
 }
 
