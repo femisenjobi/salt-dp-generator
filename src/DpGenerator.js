@@ -10,14 +10,18 @@ function DpGenerator({ width, height, xPos, yPos, mainImage, radius, logoImage }
   const [loading, setloading] = useState(false);
   const uploadWidget = () => {
     setloading(true);
-    window.cloudinary.openUploadWidget(
+    const myWidget = window.cloudinary.createUploadWidget(
       { cloud_name: 'dmlyic7tt', upload_preset: 'ml_default'},
-      function(error, result) {
-        setImage(`https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${result[0].public_id},w_${width},h_${height},c_fill,x_${xPos},y_${yPos},r_${radius}/${mainImage}`);
-        setDownloadLink(`https://res.cloudinary.com/dmlyic7tt/image/upload/fl_attachment:my_dp,w_1080,h_1080,c_fill/l_${result[0].public_id},w_${width},h_${height},c_fill,x_${xPos},y_${yPos},r_${radius}/${mainImage}`);
-        setloading(false)
+      (error, result) => {
+        if (!error && result && result.event === "success") {
+          console.log(result);
+          setImage(`https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${result.info.public_id},w_${width},h_${height},c_fill,x_${xPos},y_${yPos},r_${radius}/${mainImage}`);
+          setDownloadLink(`https://res.cloudinary.com/dmlyic7tt/image/upload/fl_attachment:my_dp,w_1080,h_1080,c_fill/l_${result.info.public_id},w_${width},h_${height},c_fill,x_${xPos},y_${yPos},r_${radius}/${mainImage}`);
+          setloading(false)
+        }
       },
     );
+    myWidget.open();
   }
 
   return (
