@@ -70,6 +70,15 @@ const myData = {
     mainImage: 'focp2022_yxxnni',
     logoImage: 'wgc-logo',
     radius: 'max',
+  },
+  'all-london': {
+    width: 435,
+    height: 435,
+    xPos: 305,
+    yPos: 105,
+    mainImage: 'alllondon',
+    logoImage: 'plain_pw7uoh',
+    radius: 'max',
   }
 }
 
