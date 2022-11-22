@@ -79,6 +79,15 @@ const myData = {
     mainImage: 'alllondon',
     logoImage: 'plain_pw7uoh',
     radius: 'max',
+  },
+  'cw2022': {
+    width: 405,
+    height: 405,
+    xPos: 215,
+    yPos: 125,
+    mainImage: 'cw2022',
+    logoImage: 'wgc-logo',
+    radius: 'max',
   }
 }
 
