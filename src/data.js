@@ -36,12 +36,12 @@ const myData = {
     radius: 'max',
   },
   'lift': {
-    width: 539,
-    height: 539,
+    width: 528,
+    height: 528,
     xPos: 0,
-    yPos: -35,
-    mainImage: 'LIFT_Badge_mpjdyl',
-    logoImage: 'lift-logo-tex3hz',
+    yPos: 0,
+    mainImage: 'lift_zgjqvp',
+    logoImage: 'plain_pw7uoh',
     radius: 'max',
   },
   'kdg2022': {
