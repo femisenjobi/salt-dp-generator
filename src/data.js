@@ -88,6 +88,15 @@ const myData = {
     mainImage: 'cw2022',
     logoImage: 'wgc-logo',
     radius: 'max',
+  },
+  'ethanim2022': {
+    width: 385,
+    height: 385,
+    xPos: 115,
+    yPos: 132,
+    mainImage: 'ethanim22_bqdtrt',
+    logoImage: 'plain_pw7uoh',
+    radius: 'max',
   }
 }
 
