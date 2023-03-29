@@ -97,6 +97,15 @@ const myData = {
     mainImage: 'ethanim22_bqdtrt',
     logoImage: 'plain_pw7uoh',
     radius: 'max',
+  },
+  'kdg2023': {
+    width: 385,
+    height: 385,
+    xPos: -245,
+    yPos: 166,
+    mainImage: 'kdg2023',
+    logoImage: 'plain_pw7uoh',
+    radius: 'max',
   }
 }
 
