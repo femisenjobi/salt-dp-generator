@@ -106,6 +106,15 @@ const myData = {
     mainImage: 'kdg2023',
     logoImage: 'plain_pw7uoh',
     radius: 'max',
+  },
+  'focp2023': {
+    width: 391,
+    height: 391,
+    xPos: -199,
+    yPos: 140,
+    mainImage: 'focp-2023_xpby1f',
+    logoImage: 'plain_pw7uoh',
+    radius: 'max',
   }
 }
 
