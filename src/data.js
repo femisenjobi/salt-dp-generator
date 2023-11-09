@@ -115,7 +115,16 @@ const myData = {
     mainImage: 'focp-2023_xpby1f',
     logoImage: 'plain_pw7uoh',
     radius: 'max',
-  }
+  },
+  'cw2023': {
+    width: 341,
+    height: 341,
+    xPos: -297,
+    yPos: 15,
+    mainImage: 'cw2023',
+    logoImage: 'plain_pw7uoh',
+    radius: 'max',
+  },
 }
 
 export default myData;
