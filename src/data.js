@@ -125,6 +125,15 @@ const myData = {
     logoImage: 'plain_pw7uoh',
     radius: 'max',
   },
+  'ethanim2023': {
+    width: 337,
+    height: 337,
+    xPos: -180,
+    yPos: 138,
+    mainImage: 'ethanim-2023',
+    logoImage: 'plain_pw7uoh',
+    radius: 'max',
+  },
 }
 
 export default myData;
