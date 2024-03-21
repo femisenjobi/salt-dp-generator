@@ -139,7 +139,7 @@ const myData = {
     height: 313,
     xPos: 165,
     yPos: 158,
-    mainImage: 'kdg2023',
+    mainImage: 'kdg2024',
     logoImage: 'plain_pw7uoh',
     radius: 'max',
   },
