@@ -134,6 +134,15 @@ const myData = {
     logoImage: 'plain_pw7uoh',
     radius: 'max',
   },
+  'kdg2024': {
+    width: 313,
+    height: 313,
+    xPos: 165,
+    yPos: 158,
+    mainImage: 'kdg2023',
+    logoImage: 'plain_pw7uoh',
+    radius: 'max',
+  },
 }
 
 export default myData;
