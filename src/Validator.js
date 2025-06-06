@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-  useParams
+  useParams,
+  Redirect // Import Redirect
 } from "react-router-dom";
 import './App.css';
 import data from './data';
@@ -11,7 +12,8 @@ function Validator() {
   const params = useParams();
   const eventData = data[params.event];
   if(!eventData){
-    return null;
+    // Redirect to homepage if event data is not found
+    return <Redirect to="/" />;
   }
 
   return (
