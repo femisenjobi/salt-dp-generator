@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 const CustomDpForm = () => {
@@ -12,8 +12,15 @@ const CustomDpForm = () => {
   const [mainImagePublicId, setMainImagePublicId] = useState('');
   const [uploading, setUploading] = useState(false);
   const [sampleImagePreview, setSampleImagePreview] = useState('');
+  const [generatedDpPreviewUrl, setGeneratedDpPreviewUrl] = useState('');
 
   const history = useHistory();
+
+  // Effect to update generated DP preview URL
+  useEffect(() => {
+    const url = generatePreviewUrl();
+    setGeneratedDpPreviewUrl(url);
+  }, [mainImagePublicId, logoImage, width, height, xPos, yPos, radius]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -104,6 +111,42 @@ const CustomDpForm = () => {
     });
   };
 
+  const generatePreviewUrl = () => {
+    if (!mainImagePublicId || !logoImage) {
+      return ""; // Or null, depending on how you want to handle this
+    }
+
+    const cloudName = 'dmlyic7tt';
+    const previewWidth = 200;
+    const previewHeight = 200;
+
+    // Construct the URL
+    // Example: https://res.cloudinary.com/YOUR_CLOUD_NAME/image/upload/w_PREVIEW_WIDTH,h_PREVIEW_HEIGHT,c_fill/l_LOGO_PUBLIC_ID,w_LOGO_WIDTH,h_LOGO_HEIGHT,c_fill,x_LOGO_X,y_LOGO_Y,r_LOGO_RADIUS/MAIN_IMAGE_PUBLIC_ID
+    // Note: Cloudinary uses `l_` for overlays, and transformations are chained.
+    // The logo's public ID needs to be URI encoded if it contains special characters like '/'.
+    // However, Cloudinary typically handles this for public IDs like `folder/image`.
+    // For simplicity, direct concatenation is used here. Consider encoding `logoImage` if issues arise.
+
+    const transformations = [
+      `w_${previewWidth}`,
+      `h_${previewHeight}`,
+      `c_fill`,
+    ];
+
+    const overlayOptions = [
+      `l_${logoImage.replace(/\//g, ':')}`, // Replace slashes with colons for overlays
+      `w_${width}`,
+      `h_${height}`,
+      `c_fill`,
+      `x_${xPos}`,
+      `y_${yPos}`,
+      `r_${radius}`,
+    ];
+
+    const url = `https://res.cloudinary.com/${cloudName}/image/upload/${transformations.join(',')}/${overlayOptions.join(',')}/${mainImagePublicId}`;
+
+    return url;
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -183,6 +226,19 @@ const CustomDpForm = () => {
                  <p className="text-success mt-2">Main image uploaded: {mainImagePublicId}</p>
               )}
             </div>
+
+            {/* Generated DP Preview Section */}
+            {generatedDpPreviewUrl && (
+              <div className="mb-3 text-center">
+                <h4 className="mb-3">DP Preview:</h4>
+                <img
+                  src={generatedDpPreviewUrl}
+                  alt="DP Preview"
+                  className="img-fluid" // Bootstrap class for responsive image
+                  style={{ maxWidth: '200px', height: 'auto', border: '1px solid #ccc' }} // Basic styling
+                />
+              </div>
+            )}
 
             <button type="submit" className="btn btn-primary w-100" disabled={uploading}>
               {uploading ? 'Uploading...' : 'Create and Save DP Profile'}
