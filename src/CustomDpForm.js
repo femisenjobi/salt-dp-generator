@@ -110,7 +110,7 @@ const CustomDpForm = () => {
     yPos: parseInt(yPos, 10) || 0,
     radius: radius || '0', // DpGenerator handles '0' or 'max' or number string
     logoImage: logoImage || 'plain_pw7uoh', // Default logo if user hasn't entered one
-    mainImage: mainImagePublicId || 'sample', // Default main image if user hasn't uploaded
+    mainImage: mainImagePublicId || sampleImageFile || 'sample', // Default main image if user hasn't uploaded
     isPreviewMode: true // Add this line
   };
 
