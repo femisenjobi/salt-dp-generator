@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   BrowserRouter as Router,
-  Switch,
+  Routes,
   Route,
 } from "react-router-dom";
 import Validator from './Validator';
@@ -11,22 +11,14 @@ import CustomDpForm from './CustomDpForm'; // Import the CustomDpForm component
 function App() {
   return (
     <Router>
-      <Switch>
-        <Route exact path="/"> {/* Add exact path for homepage */}
-          <Homepage />
-        </Route>
-        <Route path="/create-custom-dp">
-          <CustomDpForm />
-        </Route>
+      <Routes>
+        <Route exact path="/" element={<Homepage />} />
+        <Route path="/create-custom-dp" element={<CustomDpForm />} />
         {/* Route for custom DPs via Validator */}
-        <Route path="/dp/custom/:id">
-          <Validator />
-        </Route>
+        <Route path="/dp/custom/:id" element={<Validator />} />
         {/* Route for predefined event DPs via Validator */}
-        <Route path="/:eventKey">
-          <Validator />
-        </Route>
-      </Switch>
+        <Route path="/:eventKey" element={<Validator />} />
+      </Routes>
     </Router>
   );
 }

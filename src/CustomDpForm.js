@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import DpGenerator from './DpGenerator'; // Import DpGenerator
 
 const CustomDpForm = () => {
@@ -16,7 +16,7 @@ const CustomDpForm = () => {
   const [uploading, setUploading] = useState(false);
   const [sampleImagePreview, setSampleImagePreview] = useState(''); // Local preview before Cloudinary URL
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -95,7 +95,7 @@ const CustomDpForm = () => {
       const updatedDps = [...existingDps, newCustomDp];
       localStorage.setItem('customDpList', JSON.stringify(updatedDps));
       alert('Custom DP saved successfully!');
-      history.push('/');
+      navigate('/');
     } catch (error) {
       console.error('Failed to save custom DP to localStorage:', error);
       alert('Failed to save custom DP. Please try again.');

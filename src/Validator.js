@@ -1,8 +1,7 @@
 import React from 'react';
 import {
   useParams,
-  Redirect,
-  // useHistory // Not strictly needed if Redirect is used for all "not found" cases
+  Navigate,
 } from "react-router-dom";
 import './App.css';
 import data from './data'; // Predefined templates
@@ -45,7 +44,7 @@ function Validator() {
   if (!dpProps) {
     // If dpProps is still null (no valid data found), redirect to homepage.
     // alert('The requested DP configuration was not found. Redirecting to homepage.'); // Optional: for user feedback
-    return <Redirect to="/" />;
+    return <Navigate to="/" replace />;
   }
 
   // Ensure all necessary props are present, providing defaults if some are optional
