@@ -71,4 +71,47 @@ router.post('/', async (req, res) => {
     }
 });
 
+// GET /api/dp-configurations - Fetch all public DP Configurations (only slug and templateName)
+router.get('/', async (req, res) => {
+    try {
+        const publicConfigurations = await DpConfiguration.find(
+            { isPublic: true },
+            'slug templateName -_id' // Select slug and templateName, exclude _id
+        );
+
+        if (!publicConfigurations || publicConfigurations.length === 0) {
+            return res.status(200).json([]); // Return empty array if none found
+        }
+
+        res.status(200).json(publicConfigurations);
+
+    } catch (error) {
+        console.error('Error fetching public DP Configurations:', error);
+        res.status(500).json({ message: 'Server error while fetching public DP configurations.' });
+    }
+});
+
+// GET /api/dp-configurations/:slug - Fetch a single DP Configuration by slug
+router.get('/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const configuration = await DpConfiguration.findOne({ slug });
+
+        if (!configuration) {
+            return res.status(404).json({ message: 'Configuration not found.' });
+        }
+
+        if (!configuration.isPublic) {
+            // Treat non-public configurations as not found for general access
+            return res.status(404).json({ message: 'Configuration not public.' });
+        }
+
+        res.status(200).json(configuration);
+
+    } catch (error) {
+        console.error(`Error fetching DP Configuration with slug ${req.params.slug}:`, error);
+        res.status(500).json({ message: 'Server error while fetching DP configuration.' });
+    }
+});
+
 module.exports = router;

@@ -51,6 +51,10 @@ const dpConfigurationSchema = new mongoose.Schema({
         optional: true,
         trim: true
         // comment: "User-friendly name for this DP template"
+    },
+    isPublic: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true }); // Add timestamps (createdAt, updatedAt)
 
