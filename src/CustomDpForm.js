@@ -148,7 +148,7 @@ const CustomDpForm = () => {
     return url;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => { // Changed to async
     event.preventDefault();
 
     if (!mainImagePublicId) {
@@ -164,20 +164,51 @@ const CustomDpForm = () => {
       logoImage, // This is the public ID for the logo, entered by user
       radius: parseInt(radius, 10),
       mainImage: mainImagePublicId, // This is the public ID from uploaded sample image
-      // Add a name or description if you plan to use it
       name: `Custom DP ${Date.now()}`, // Example name
       description: 'User-created custom DP configuration.',
     };
 
+    // Simulate API Call
+    setUploading(true); // Indicate loading state
+
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     try {
-      const existingDps = JSON.parse(localStorage.getItem('customDpList')) || [];
-      const updatedDps = [...existingDps, newCustomDp];
-      localStorage.setItem('customDpList', JSON.stringify(updatedDps));
-      alert('Custom DP saved successfully!');
-      history.push('/'); // Redirect to homepage
+      // Simulate error condition
+      if (logoImage === "errorTest") {
+        throw new Error("Simulated backend error during save.");
+      }
+
+      // Simulate actual fetch POST request (conceptually)
+      // const response = await fetch('/api/dp', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(newCustomDp),
+      // });
+
+      // if (!response.ok) {
+      //   // In a real scenario, you might get error details from response.json()
+      //   throw new Error(`HTTP error! status: ${response.status}`);
+      // }
+
+      // const result = await response.json(); // Example: { id: "..." }
+
+      // Simulated successful response:
+      const simulatedResult = { id: `simulatedUniqueId${Date.now()}` };
+      const shareableLink = `https://your-app-domain.com/dp/${simulatedResult.id}`;
+
+      console.log(`Shareable DP Link: ${shareableLink}`);
+      alert(`Custom DP saved! Shareable link: ${shareableLink}`);
+      history.push('/'); // Redirect to homepage on success
+
     } catch (error) {
-      console.error('Failed to save custom DP to localStorage:', error);
-      alert('Failed to save custom DP. Please try again.');
+      console.error("Simulated error: Failed to save DP.", error);
+      alert(`Simulated error: Failed to save custom DP. Please try again. Details: ${error.message}`);
+    } finally {
+      setUploading(false); // Reset loading state
     }
   };
 

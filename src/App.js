@@ -7,6 +7,7 @@ import {
 import Validator from './Validator';
 import Homepage from './Homepage'; // Import the Homepage component
 import CustomDpForm from './CustomDpForm'; // Import the CustomDpForm component
+import SharedDpViewer from './SharedDpViewer'; // Import the SharedDpViewer component
 
 function App() {
   return (
@@ -21,6 +22,10 @@ function App() {
         {/* Route for custom DPs via Validator */}
         <Route path="/dp/custom/:id">
           <Validator />
+        </Route>
+        {/* New route for SharedDpViewer */}
+        <Route path="/dp/:dpId">
+          <SharedDpViewer />
         </Route>
         {/* Route for predefined event DPs via Validator */}
         <Route path="/:eventKey">
