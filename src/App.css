@@ -13,6 +13,89 @@
   }
 }
 
+/* src/App.css */
+
+/* Homepage Styles */
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: #f4f7f6;
+  color: #333;
+}
+
+.container h1 {
+  color: #2c3e50;
+  font-weight: 300;
+}
+
+.container .lead {
+  color: #555;
+  font-size: 1.1rem;
+}
+
+/* Template Card Styles */
+.card {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-img-top {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  max-height: 200px; /* Ensure images are not too tall */
+  object-fit: cover; /* Cover the area, cropping if necessary */
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #34495e;
+  margin-bottom: 0.5rem;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  min-height: 60px; /* Give some consistent height */
+}
+
+.btn-primary {
+  background-color: #3498db;
+  border-color: #3498db;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+  border-color: #2980b9;
+}
+
+/* DpGenerator page specific styles if any can also go here or in a separate file */
+.upload-button, .btn-primary.ml-3 {
+  margin-top: 10px;
+}
+
+/* Ensure spinner is centered and visible */
+.spinner-border {
+  width: 5rem !important; /* Using !important to override potential bootstrap inline style if needed */
+  height: 5rem !important;
+  margin: 50px auto !important; /* Centering spinner */
+  display: block;
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
