@@ -4,6 +4,13 @@ import '@testing-library/jest-dom';
 import { MemoryRouter, Router } from 'react-router-dom'; // Router for useHistory
 import { createMemoryHistory } from 'history'; // For testing history push
 import CustomDpForm from './CustomDpForm';
+import DpGenerator from './DpGenerator'; // Import DpGenerator
+
+// Mock DpGenerator
+jest.mock('./DpGenerator', () => {
+  // Return a simple functional component mock that captures props
+  return jest.fn((props) => <div data-testid="dp-generator-preview-mock" {...props}>Mocked DpGenerator</div>);
+});
 
 // Mock Cloudinary globally for all tests in this file
 global.window.cloudinary = {
@@ -33,11 +40,12 @@ describe('CustomDpForm', () => {
   beforeEach(() => {
     // Reset mocks before each test
     localStorageMock.clear();
-    jest.clearAllMocks();
+    // jest.clearAllMocks(); // This would clear DpGenerator mock too early if not careful
     global.window.cloudinary.createUploadWidget.mockReset();
+    DpGenerator.mockClear(); // Clear mock calls for DpGenerator specifically
   });
 
-  test('renders all form inputs and submit button', () => {
+  test('renders all form inputs, submit button, and DpGenerator in preview mode', () => {
     render(<CustomDpForm />, { wrapper: MemoryRouter });
 
     expect(screen.getByLabelText(/Logo Width/i)).toBeInTheDocument();
@@ -48,9 +56,24 @@ describe('CustomDpForm', () => {
     expect(screen.getByLabelText(/Logo Radius/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Main DP Image \(Your Photo\)/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Create and Save DP Profile/i })).toBeInTheDocument();
+
+    // Check for DpGenerator preview
+    expect(screen.getByTestId('dp-generator-preview-mock')).toBeInTheDocument();
+    expect(DpGenerator).toHaveBeenCalled();
+    // Check initial props for DpGenerator, including isPreviewMode: true
+    expect(DpGenerator).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        isPreviewMode: true,
+        width: 300, // Initial state for width
+        height: 300, // Initial state for height
+        logoImage: 'plain_pw7uoh', // Default logoImage for preview
+        mainImage: 'sample', // Default mainImage for preview
+      }),
+      {} // Second argument (context) for functional component
+    );
   });
 
-  test('input fields update their values on change', () => {
+  test('input fields update their values and DpGenerator props', async () => {
     render(<CustomDpForm />, { wrapper: MemoryRouter });
 
     const widthInput = screen.getByLabelText(/Logo Width/i);
@@ -76,7 +99,55 @@ describe('CustomDpForm', () => {
     const radiusInput = screen.getByLabelText(/Logo Radius/i);
     fireEvent.change(radiusInput, { target: { value: '50' } });
     expect(radiusInput.value).toBe('50');
+
+    // Check DpGenerator props update after changing width
+    const widthInput = screen.getByLabelText(/Logo Width/i);
+    fireEvent.change(widthInput, { target: { value: '350' } });
+    expect(widthInput.value).toBe('350');
+    // DpGenerator should be re-rendered with new width
+    // Need to wait for state update and re-render
+    await waitFor(() => {
+      expect(DpGenerator).toHaveBeenLastCalledWith(
+        expect.objectContaining({ width: 350, isPreviewMode: true }),
+        {}
+      );
+    });
+
+    // Test logoImage prop update
+    const logoImageInput = screen.getByLabelText(/Overlay Logo Image \(Cloudinary Public ID\)/i);
+    fireEvent.change(logoImageInput, { target: { value: 'new_logo_id' } });
+    expect(logoImageInput.value).toBe('new_logo_id');
+    await waitFor(() => {
+      expect(DpGenerator).toHaveBeenLastCalledWith(
+        expect.objectContaining({ logoImage: 'new_logo_id', isPreviewMode: true }),
+        {}
+      );
+    });
   });
+
+  test('DpGenerator preview updates after image upload', async () => {
+    const mockUploadWidgetOpen = jest.fn();
+    global.window.cloudinary.createUploadWidget.mockImplementation((options, callback) => {
+      setTimeout(() => callback(null, { event: 'success', info: { public_id: 'uploaded_image_id_123' } }), 0);
+      return { open: mockUploadWidgetOpen };
+    });
+
+    render(<CustomDpForm />, { wrapper: MemoryRouter });
+
+    const sampleImageInput = screen.getByLabelText(/Main DP Image \(Your Photo\)/i);
+    const dummyFile = new File(['(⌐□_□)'], 'testfile.png', { type: 'image/png' });
+    fireEvent.change(sampleImageInput, { target: { files: [dummyFile] } });
+
+    expect(mockUploadWidgetOpen).toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(DpGenerator).toHaveBeenLastCalledWith(
+        expect.objectContaining({ mainImage: 'uploaded_image_id_123', isPreviewMode: true }),
+        {}
+      );
+    });
+  });
+
 
   test('form submission with successful image upload', async () => {
     const mockUploadWidgetOpen = jest.fn();
@@ -154,16 +225,48 @@ describe('CustomDpForm', () => {
     render(<CustomDpForm />, { wrapper: MemoryRouter });
 
     fireEvent.change(screen.getByLabelText(/Logo Width/i), { target: { value: '400' } });
+    fireEvent.change(screen.getByLabelText(/Overlay Logo Image \(Cloudinary Public ID\)/i), { target: { value: 'logo_public_id_for_submit' } });
     // ... fill other fields except triggering upload ...
 
     const submitButton = screen.getByRole('button', { name: /Create and Save DP Profile/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(mockAlert).toHaveBeenCalledWith('Please upload a sample image first.');
+      // Alert because mainImagePublicId is not set
+      expect(mockAlert).toHaveBeenCalledWith('Please upload a sample image first for the main DP.');
     });
 
     expect(localStorageMock.setItem).not.toHaveBeenCalled();
+
+    // Now test alert if logoImage is missing
+    // Simulate main image upload first
+     const mockUploadWidgetOpen = jest.fn();
+    global.window.cloudinary.createUploadWidget.mockImplementation((options, callback) => {
+      setTimeout(() => callback(null, { event: 'success', info: { public_id: 'test_main_image_id_for_alert' } }), 0);
+      return { open: mockUploadWidgetOpen, };
+    });
+    const sampleImageInput = screen.getByLabelText(/Main DP Image \(Your Photo\)/i);
+    const dummyFile = new File(['(⌐□_□)'], 'chucknorris.png', { type: 'image/png' });
+    fireEvent.change(sampleImageInput, { target: { files: [dummyFile] } });
+     await waitFor(() => {
+      expect(screen.getByText(/Main image uploaded: test_main_image_id_for_alert/i)).toBeInTheDocument();
+    });
+    // Clear logoImage input
+    fireEvent.change(screen.getByLabelText(/Overlay Logo Image \(Cloudinary Public ID\)/i), { target: { value: '' } });
+    fireEvent.click(submitButton);
+    await waitFor(() => {
+        expect(mockAlert).toHaveBeenCalledWith('Please provide a Cloudinary Public ID for the overlay logo.');
+    });
+
+
     mockAlert.mockRestore(); // Restore original alert
+  });
+
+  test('layout structure includes two columns', () => {
+    const { container } = render(<CustomDpForm />, { wrapper: MemoryRouter });
+    // Check for the presence of two elements that are likely to be the columns
+    // This is a basic check; more specific data-testid attributes would be robust
+    const columns = container.querySelectorAll('.col-md-6');
+    expect(columns.length).toBeGreaterThanOrEqual(2); // Expect at least two such columns
   });
 });
