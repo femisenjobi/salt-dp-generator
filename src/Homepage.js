@@ -23,7 +23,7 @@ function Homepage() {
                 style={{height: '200px', objectFit: 'cover'}}
               />
               <div className="card-body">
-                <h5 className="card-title">{template.name || eventKey.replace('-', ' ').replace(/\w/g, l => l.toUpperCase())}</h5>
+                <h5 className="card-title">{template.name || eventKey.replace(/-/g, ' ').replace(/(^|\s)\w/g, l => l.toUpperCase())}</h5>
                 <p className="card-text">{template.description || 'A cool template for your DP.'}</p>
                 <Link to={`/${eventKey}`} className="btn btn-primary">
                   Customize
