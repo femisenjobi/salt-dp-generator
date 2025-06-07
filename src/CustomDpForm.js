@@ -8,7 +8,6 @@ const CustomDpForm = () => {
   const [height, setHeight] = useState('300');
   const [xPos, setXPos] = useState('0');
   const [yPos, setYPos] = useState('0');
-  const [logoImage, setLogoImage] = useState(''); // User will input this Cloudinary ID
   const [radius, setRadius] = useState('0'); // DpGenerator might expect string for 'max' or numbers
   const [templateName, setTemplateName] = useState(''); // New state for template name
   const [slug, setSlug] = useState(''); // New state for slug
