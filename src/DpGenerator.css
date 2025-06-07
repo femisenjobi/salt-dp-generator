@@ -8,12 +8,20 @@
 }
 
 .dp-header {
-  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-  color: white;
+  background: linear-gradient(135deg, #4a0991 0%, #1a5dc7 100%);
+  color: #ffffff;
   padding: 2rem;
   border-radius: 0.5rem;
   margin-bottom: 2rem;
   text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.dp-header h1,
+.dp-header p {
+  color: #ffffff;
+  font-weight: bold;
 }
 
 .dp-preview-container {
@@ -121,10 +129,12 @@
 
 .instructions {
   background-color: #f8f9fa;
-  border-left: 4px solid #6a11cb;
+  border-left: 4px solid #4a0991;
   padding: 1rem;
   margin-bottom: 1.5rem;
   border-radius: 0 0.25rem 0.25rem 0;
+  color: #333;
+  font-weight: 500;
 }
 
 /* Mobile Optimization */
