@@ -23,8 +23,7 @@ router.get('/', async (req, res) => {
     try {
         const publicConfigurations = await DpConfiguration.find(
             { isPublic: true },
-            'slug templateName -_id' // Select slug and templateName, exclude _id
-        );
+            'slug templateName mainImageCloudinaryId logoImageCloudinaryId width height xPos yPos radius');
 
         if (!publicConfigurations || publicConfigurations.length === 0) {
             return res.status(200).json([]); // Return empty array if none found
