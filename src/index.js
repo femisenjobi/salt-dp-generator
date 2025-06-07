@@ -3,14 +3,10 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 
-// Configure API base URL for production
-if (process.env.NODE_ENV === 'production') {
-  // In production, API calls to /api/* should be redirected to /.netlify/functions/api/*
-  window.API_BASE_URL = '/.netlify/functions/api';
-} else {
-  // In development, use the proxy setup
-  window.API_BASE_URL = '/api';
-}
+// Configure API base URL
+window.API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? '/.netlify/functions/api'
+  : '/api';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

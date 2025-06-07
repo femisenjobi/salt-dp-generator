@@ -5,7 +5,6 @@ const connectDB = require('../../server/db');
 const DpConfiguration = require('../../server/models/DpConfiguration');
 const shortid = require('shortid');
 
-// Initialize Express app
 const app = express();
 
 // Connect to MongoDB
@@ -46,11 +45,7 @@ app.get('/dp-configurations', async (req, res) => {
       { isPublic: true },
       'slug templateName mainImageCloudinaryId logoImageCloudinaryId width height xPos yPos radius');
 
-    if (!publicConfigurations || publicConfigurations.length === 0) {
-      return res.status(200).json([]); // Return empty array if none found
-    }
-
-    res.status(200).json(publicConfigurations);
+    res.status(200).json(publicConfigurations || []);
   } catch (error) {
     console.error('Error fetching public DP Configurations:', error);
     res.status(500).json({ message: 'Server error while fetching public DP configurations.' });
@@ -73,14 +68,12 @@ app.post('/dp-configurations', async (req, res) => {
   } = req.body;
 
   try {
-    // Basic validation
     if (!mainImageCloudinaryId || !logoImageCloudinaryId || !width || !height) {
       return res.status(400).json({ message: 'Missing required fields: mainImageCloudinaryId, logoImageCloudinaryId, width, height, xPos, yPos.' });
     }
 
     let slugToUse;
     if (customSlug) {
-      // Sanitize customSlug
       let sanitizedSlug = customSlug
         .toLowerCase()
         .replace(/\s+/g, '-')
@@ -104,7 +97,6 @@ app.post('/dp-configurations', async (req, res) => {
         slugToUse = sanitizedSlug;
       }
     } else {
-      // Generate a unique slug
       let newSlug = shortid.generate();
       let attempts = 0;
       while (await DpConfiguration.findOne({ slug: newSlug }) && attempts < 5) {
@@ -168,10 +160,9 @@ app.get('/dp-configurations/:slug', async (req, res) => {
   }
 });
 
-// API 404 handler for unmatched API routes
+// API 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: "API endpoint not found", path: req.path });
 });
 
-// Export the serverless function
 module.exports.handler = serverless(app);

@@ -1,4 +1,3 @@
-// This file is only used in development
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function(app) {

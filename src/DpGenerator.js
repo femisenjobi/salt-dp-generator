@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import "./DpGenerator.css";
 
-// Add isPreviewMode prop with a default value
 function DpGenerator({
   width,
   height,
@@ -14,57 +13,38 @@ function DpGenerator({
   templateName: templateNameProp,
   isPreviewMode = false,
 }) {
-  const eventLogoUrl = `https://res.cloudinary.com/dmlyic7tt/image/upload/h_220/${logoImage}`; // For non-preview, the event's main logo
-  const placeholderBaseImageUrl = `https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080/${mainImage}`; // Base image for the DP
+  const eventLogoUrl = `https://res.cloudinary.com/dmlyic7tt/image/upload/h_220/${logoImage}`;
+  const placeholderBaseImageUrl = `https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080/${mainImage}`;
 
-  // State for the final generated image URL (main DP with overlay)
-  const [generatedImageUrl, setGeneratedImageUrl] = useState(
-    placeholderBaseImageUrl
-  );
-  // State for the user's uploaded photo public_id (only in non-preview mode)
+  const [generatedImageUrl, setGeneratedImageUrl] = useState(placeholderBaseImageUrl);
   const [uploadedUserPhotoId, setUploadedUserPhotoId] = useState("");
-  // State for download link
   const [downloadLink, setDownloadLink] = useState("");
   const [loading, setLoading] = useState(false);
-  // Removed local state for templateName
 
   useEffect(() => {
-    // This effect constructs the URL for the preview or updates non-preview based on inputs
-    let finalUrl = placeholderBaseImageUrl; // Default to placeholder
+    let finalUrl = placeholderBaseImageUrl;
+    
     if (isPreviewMode) {
-      // For preview, mainImage IS the user's photo public_id.
-      // logoImage IS the overlay logo's public_id.
-      // Construct the full transformation URL.
       if (mainImage && logoImage) {
-        // Ensure both are provided for a meaningful preview
         finalUrl = `https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${logoImage},w_${width},h_${height},c_fill,x_${xPos},y_${yPos},r_${radius}/${mainImage}`;
       } else if (mainImage) {
-        // Only main image provided
         finalUrl = `https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/${mainImage}`;
       }
-      // If only logoImage, it's not a valid preview of a DP. Placeholder remains.
     } else {
-      // For non-preview (interactive mode)
       if (uploadedUserPhotoId) {
-        // If user has uploaded their photo, mainImage is the event's base image, logoImage is the event's overlay
-        finalUrl = `https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${uploadedUserPhotoId},w_${width},h_${height},c_fill,x_${xPos},y_${yPos},r_${radius}/${mainImage}`;
-        // If user has uploaded their photo, we use it as the overlay
         const baseForOverlay = uploadedUserPhotoId || mainImage;
         finalUrl = `https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${baseForOverlay},w_${width},h_${height},c_fill,x_${xPos},y_${yPos},r_${radius}/${mainImage}`;
 
-        // Update download link
         if (uploadedUserPhotoId) {
-          // Only allow download if user has uploaded their base image
           setDownloadLink(
             `https://res.cloudinary.com/dmlyic7tt/image/upload/fl_attachment:my_dp,w_1080,h_1080,c_fill/l_${uploadedUserPhotoId},w_${width},h_${height},c_fill,x_${xPos},y_${yPos},r_${radius}/${mainImage}`
           );
         } else {
-          setDownloadLink(""); // No download if it's just the placeholder/template base
+          setDownloadLink("");
         }
       } else {
-        // No user photo uploaded yet, using mainImage prop as base for overlay
         finalUrl = `https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080,c_fill/l_${logoImage},w_${width},h_${height},c_fill,x_${xPos},y_${yPos},r_${radius}/${mainImage}`;
-        setDownloadLink(""); // No download for default template view
+        setDownloadLink("");
       }
     }
     setGeneratedImageUrl(finalUrl);
@@ -82,20 +62,18 @@ function DpGenerator({
   ]);
 
   const uploadWidget = () => {
-    if (isPreviewMode) return; // Guard against calling in preview
+    if (isPreviewMode) return;
 
     setLoading(true);
     window.cloudinary
       .createUploadWidget(
-        { cloud_name: "dmlyic7tt", upload_preset: "ml_default" }, // Ensure these are correct
+        { cloud_name: "dmlyic7tt", upload_preset: "ml_default" },
         (error, result) => {
           setLoading(false);
           if (!error && result && result.event === "success") {
             setUploadedUserPhotoId(result.info.public_id);
-            // The useEffect will now reconstruct generatedImageUrl and downloadLink
           } else if (error) {
             console.error("Upload error in DpGenerator:", error);
-            // Potentially reset uploadedUserPhotoId or show an error message
           }
         }
       )
@@ -114,7 +92,6 @@ function DpGenerator({
       
       <div className="row">
         <div className={isPreviewMode ? "col-12" : "col-md-8 offset-md-2"}>
-          {/* Event Logo - only in non-preview mode */}
           {!isPreviewMode && templateNameProp && (
             <div className="text-center mb-4">
               <img
@@ -126,14 +103,12 @@ function DpGenerator({
             </div>
           )}
 
-          {/* Instructions - only in non-preview mode */}
           {!isPreviewMode && (
             <div className="instructions mb-4">
               <p><i className="bi bi-info-circle me-2"></i> <span className="d-none d-md-inline">Upload your photo to create a custom display picture with this template.</span><span className="d-inline d-md-none">Upload your photo to create a custom DP.</span></p>
             </div>
           )}
 
-          {/* Main DP display area */}
           <div className="dp-image-container">
             {loading && !isPreviewMode ? (
               <div className="loading-spinner">
@@ -150,7 +125,6 @@ function DpGenerator({
             )}
           </div>
 
-          {/* Controls - only in non-preview mode */}
           {!isPreviewMode && (
             <div className="dp-controls">
               <div className="d-flex justify-content-between flex-wrap">
@@ -183,7 +157,6 @@ function DpGenerator({
                       })
                       .catch(err => console.error('Error sharing:', err));
                     } else {
-                      // Fallback for browsers that don't support the Web Share API
                       const tempInput = document.createElement('input');
                       document.body.appendChild(tempInput);
                       tempInput.value = window.location.href;
