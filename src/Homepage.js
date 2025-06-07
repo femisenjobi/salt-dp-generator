@@ -18,7 +18,17 @@ function Homepage() {
       setError(null);
       try {
         // Use the endpoint that fetches all DPs, including non-public
-        const response = await fetch("/api/dp-configurations/public/all");
+        const apiUrl = window.API_BASE_URL ? 
+          `${window.API_BASE_URL}/dp-configurations/public/all` : 
+          "/api/dp-configurations/public/all";
+        
+        const response = await fetch(apiUrl, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

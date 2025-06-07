@@ -147,7 +147,9 @@ const CustomDpForm = () => {
       isPublic: isPublic, // Add isPublic
     };
 
-    const apiUrl = '/api/dp-configurations';
+    const apiUrl = window.API_BASE_URL ? 
+      `${window.API_BASE_URL}/dp-configurations` : 
+      '/api/dp-configurations';
 
     try {
       fetch(apiUrl, {

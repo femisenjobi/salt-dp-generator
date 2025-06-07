@@ -43,7 +43,16 @@ function Validator() {
         if (params.slug) {
           // This is /dp/:slug
           try {
-            const response = await fetch(`/api/dp-configurations/${params.slug}`);
+            const apiUrl = window.API_BASE_URL ? 
+              `${window.API_BASE_URL}/dp-configurations/${params.slug}` : 
+              `/api/dp-configurations/${params.slug}`;
+              
+            const response = await fetch(apiUrl, {
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              }
+            });
             if (!response.ok) {
               if (response.status === 404) {
                 setNotFound(true);
