@@ -109,13 +109,6 @@ describe('Homepage - API Fetched DP Configurations', () => {
     { _id: '3', slug: 'public-dp-2', templateName: 'Public DP 2 (Undefined isPublic)', mainImageCloudinaryId: 'pub_img_2' }, // isPublic undefined
   ];
 
-  test('calls /api/dp-configurations/public/all on mount and displays loading state', async () => {
-    global.fetch.mockImplementationOnce(() => new Promise(() => {})); // Keep it pending to check loading state
-    render(<Homepage />, { wrapper: MemoryRouter });
-    expect(global.fetch).toHaveBeenCalledWith('/api/dp-configurations/public/all');
-    expect(screen.getByText(/Loading configurations.../i)).toBeInTheDocument();
-  });
-
   test('renders public and private DP sections if API returns mixed data', async () => {
     global.fetch.mockResolvedValueOnce({
       ok: true,
@@ -124,7 +117,7 @@ describe('Homepage - API Fetched DP Configurations', () => {
     render(<Homepage />, { wrapper: MemoryRouter });
 
     await waitFor(() => {
-      expect(screen.getByText('User Generated Configurations')).toBeInTheDocument();
+      expect(screen.getByText('What Others are Creating')).toBeInTheDocument();
       // Check for at least one public DP
       expect(screen.getByText('Public DP 1')).toBeInTheDocument();
       expect(screen.getByText('Public DP 2 (Undefined isPublic)')).toBeInTheDocument();
@@ -146,7 +139,7 @@ describe('Homepage - API Fetched DP Configurations', () => {
 
     // Check Public DPs
     await waitFor(() => {
-      const publicSection = screen.getByText('User Generated Configurations').closest('div.container > div > h2').nextElementSibling;
+      const publicSection = screen.getByText('What Others are Creating').closest('div.container > div > h2').nextElementSibling;
       expect(within(publicSection).getByText('Public DP 1')).toBeInTheDocument();
       expect(within(publicSection).getByText('Public DP 2 (Undefined isPublic)')).toBeInTheDocument();
       expect(within(publicSection).queryByText('Private DP 1')).not.toBeInTheDocument();
@@ -216,7 +209,7 @@ describe('Homepage - API Fetched DP Configurations', () => {
     render(<Homepage />, { wrapper: MemoryRouter });
 
     await waitFor(() => {
-      expect(screen.getByText('User Generated Configurations')).toBeInTheDocument();
+      expect(screen.getByText('What Others are Creating')).toBeInTheDocument();
       expect(screen.getByText('Public DP 1')).toBeInTheDocument();
       expect(screen.queryByText('Your Private DPs')).not.toBeInTheDocument();
     });

@@ -19,8 +19,10 @@ function Homepage() {
       try {
         // Use the endpoint that fetches all DPs, including non-public
         const apiUrl = window.API_BASE_URL ? 
-          `${window.API_BASE_URL}/dp-configurations/public/all` : 
-          "/api/dp-configurations/public/all";
+          `${window.API_BASE_URL}/dp-configurations` : 
+          "/api/dp-configurations";
+          
+        console.log("Fetching from URL:", apiUrl);
         
         const response = await fetch(apiUrl, {
           headers: {
@@ -66,8 +68,8 @@ function Homepage() {
         </Link>
       </div>
 
-      {/* Section for User Generated Configurations from API */}
-      <h2 className="section-title text-center">User Generated Configurations</h2>
+      {/* Section for What Others are Creating from API */}
+      <h2 className="section-title text-center">What Others are Creating</h2>
       {loading && (
         <div className="text-center py-4">
           <div className="spinner-border text-primary" role="status">

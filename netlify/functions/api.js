@@ -7,44 +7,24 @@ const shortid = require('shortid');
 
 const app = express();
 
-// Connect to MongoDB
 connectDB();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Root endpoint
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the Custom DP Backend API!' });
 });
 
-// Test endpoint
 app.get('/test', (req, res) => {
   res.json({ message: 'API is working!' });
 });
 
-// GET /dp-configurations/public/all - Get all DP Configurations
-app.get('/dp-configurations/public/all', async (req, res) => {
-  try {
-    const configurations = await DpConfiguration.find({});
-    res.status(200).json(configurations);
-  } catch (error) {
-    console.error('Error fetching DP configurations:', error);
-    res.status(500).json({
-      message: "Error fetching DP configurations",
-      error: error.message
-    });
-  }
-});
-
-// GET /dp-configurations - Fetch all public DP Configurations
 app.get('/dp-configurations', async (req, res) => {
   try {
     const publicConfigurations = await DpConfiguration.find(
       { isPublic: true },
       'slug templateName mainImageCloudinaryId logoImageCloudinaryId width height xPos yPos radius');
-
     res.status(200).json(publicConfigurations || []);
   } catch (error) {
     console.error('Error fetching public DP Configurations:', error);
@@ -52,7 +32,6 @@ app.get('/dp-configurations', async (req, res) => {
   }
 });
 
-// POST /dp-configurations - Create a new DP Configuration
 app.post('/dp-configurations', async (req, res) => {
   const {
     mainImageCloudinaryId,
@@ -139,7 +118,6 @@ app.post('/dp-configurations', async (req, res) => {
   }
 });
 
-// GET /dp-configurations/:slug - Fetch a single DP Configuration by slug
 app.get('/dp-configurations/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
@@ -160,7 +138,6 @@ app.get('/dp-configurations/:slug', async (req, res) => {
   }
 });
 
-// API 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: "API endpoint not found", path: req.path });
 });
