@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, Navigate, useLocation } from "react-router-dom";
 import './App.css';
 import data from './data'; // Predefined templates
 import DpGenerator from './DpGenerator';
 
 function Validator() {
   const params = useParams();
+  const location = useLocation(); // Access location
   const [dpConfig, setDpConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,6 +20,8 @@ function Validator() {
       setDpConfig(null);
 
       try {
+        // Removed private DP config check via location.state
+
         if (params.slug) {
           // Check if this is the /dp/:slug route, not /dp/custom/:id
           // The route order in App.js should ideally prevent /dp/custom/ reaching here if 'slug' is the param name.
@@ -59,21 +62,7 @@ function Validator() {
                 // isPreviewMode should be false or rely on DpGenerator's default
               });
             }
-        } else if (params.id) { // Handles /dp/custom/:id
-          const customDpId = parseInt(params.id, 10);
-          const customDpListString = localStorage.getItem('customDpList');
-          if (customDpListString) {
-            const customDpList = JSON.parse(customDpListString);
-            if (customDpId >= 0 && customDpId < customDpList.length) {
-              // Assuming customDpList items are already in the correct format for DpGenerator
-              // Or map them if necessary
-              setDpConfig(customDpList[customDpId]);
-            } else {
-              setNotFound(true);
-            }
-          } else {
-            setNotFound(true); // No list, so ID cannot be found
-          }
+        // Removed localStorage handling for params.id
         } else if (params.eventKey) { // Handles /:eventKey for predefined DPs from data.js
           if (data[params.eventKey]) {
             setDpConfig(data[params.eventKey]);
@@ -93,7 +82,7 @@ function Validator() {
     };
 
     fetchConfig();
-  }, [params.slug, params.id, params.eventKey]);
+  }, [params.slug, params.eventKey]);
 
   if (loading) {
     return <div className="container mt-5 text-center"><p>Loading DP configuration...</p><div className="spinner-border" role="status"><span className="sr-only">Loading...</span></div></div>;

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'; // Added useEffect
 import './App.css';
 
 // Add isPreviewMode prop with a default value
-function DpGenerator({ width, height, xPos, yPos, mainImage, radius, logoImage, isPreviewMode = false }) {
+function DpGenerator({ width, height, xPos, yPos, mainImage, radius, logoImage, templateName: templateNameProp, isPreviewMode = false }) {
   const eventLogoUrl = `https://res.cloudinary.com/dmlyic7tt/image/upload/h_220/${logoImage}`; // For non-preview, the event's main logo
   const placeholderBaseImageUrl = `https://res.cloudinary.com/dmlyic7tt/image/upload/w_1080,h_1080/${mainImage}`; // Base image for the DP
 
@@ -14,8 +14,7 @@ function DpGenerator({ width, height, xPos, yPos, mainImage, radius, logoImage, 
   // State for download link
   const [downloadLink, setDownloadLink] = useState('');
   const [loading, setLoading] = useState(false);
-  // State for template name
-  const [templateName, setTemplateName] = useState('');
+  // Removed local state for templateName
 
   useEffect(() => {
     // This effect constructs the URL for the preview or updates non-preview based on inputs
@@ -112,16 +111,13 @@ function DpGenerator({ width, height, xPos, yPos, mainImage, radius, logoImage, 
           {/* Controls - only in non-preview mode */}
           {!isPreviewMode && (
             <>
-              <div className="row d-flex justify-content-center mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter Template Name"
-                  value={templateName}
-                  onChange={(e) => setTemplateName(e.target.value)}
-                  style={{ maxWidth: '300px' }}
-                />
-              </div>
+              {/* Display templateNameProp if available */}
+              {templateNameProp && (
+                <div className="row d-flex justify-content-center mb-2">
+                  <h4>Template: {templateNameProp}</h4>
+                </div>
+              )}
+              {/* Removed template name input field */}
               <div className="row d-flex justify-content-center">
                 <h3>Create your custom DP</h3>
               </div>
