@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Navigate, useLocation } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import './App.css';
 import data from './data'; // Predefined templates
 import DpGenerator from './DpGenerator';
