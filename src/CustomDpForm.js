@@ -342,7 +342,7 @@ const CustomDpForm = () => {
                 >
                   {uploading && !mainImagePublicId
                     ? "Uploading Main Image..."
-                    : "Upload Main Image via Cloudinary"}
+                    : "Upload Main Image"}
                 </button>
                 {uploading && (
                   <div className="text-primary mt-2">
@@ -368,7 +368,7 @@ const CustomDpForm = () => {
                 >
                   {uploading
                     ? "Uploading Logo..."
-                    : "Upload Logo via Cloudinary"}
+                    : "Upload Logo"}
                 </button>
                 {logoImagePublicId && (
                   <p className="text-success mt-1">Logo uploaded </p>
