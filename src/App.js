@@ -14,7 +14,7 @@ function App() {
     // Wrap the Router with QueryClientProvider
       <Router>
         <Routes>
-          <Route exact path="/" element={<Homepage />} />
+          <Route path="/" element={<Homepage />} />
           <Route path="/create-custom-dp" element={<CustomDpForm />} />
           {/* Route for custom DPs via Validator */}
           <Route path="/dp/custom/:id" element={<Validator />} />

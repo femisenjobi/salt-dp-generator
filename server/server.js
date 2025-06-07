@@ -3,7 +3,7 @@ const express = require('express');
 const path = require("path");
 const cors = require('cors');
 const connectDB = require('./db'); // Import DB connection function
-const cloudinary = require('./cloudinaryConfig'); // Import Cloudinary configured instance
+// const cloudinary = require('./cloudinaryConfig'); // Import Cloudinary configured instance
 const dpConfigurationRoutes = require('./routes/dpConfigurationRoutes'); // Will be used in route handlers later
 
 // Initialize Express app
@@ -41,13 +41,13 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     // You can also log Cloudinary config status here if needed
-    if (cloudinary.config().cloud_name) {
-        console.log(`Cloudinary configured for cloud: ${cloudinary.config().cloud_name}`);
-    } else {
-        console.warn('Cloudinary is not configured. Check .env variables and cloudinaryConfig.js');
-    }
+    // if (cloudinary.config().cloud_name) {
+    //     console.log(`Cloudinary configured for cloud: ${cloudinary.config().cloud_name}`);
+    // } else {
+    //     console.warn('Cloudinary is not configured. Check .env variables and cloudinaryConfig.js');
+    // }
 });

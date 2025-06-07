@@ -3,6 +3,41 @@ const router = express.Router();
 const DpConfiguration = require('../models/DpConfiguration');
 const shortid = require('shortid');
 
+// GET /api/dp-configurations/public/all - Get all public DP Configurations
+// IMPORTANT: Define specific routes BEFORE parameterized routes
+router.get('/public/all', async (req, res) => {
+    try {
+        const configurations = await DpConfiguration.find({});
+        res.status(200).json(configurations);
+    } catch (error) {
+        console.error('Error fetching DP configurations:', error);
+        res.status(500).json({
+            message: "Error fetching DP configurations",
+            error: error.message
+        });
+    }
+});
+
+// GET /api/dp-configurations - Fetch all public DP Configurations (only slug and templateName)
+router.get('/', async (req, res) => {
+    try {
+        const publicConfigurations = await DpConfiguration.find(
+            { isPublic: true },
+            'slug templateName -_id' // Select slug and templateName, exclude _id
+        );
+
+        if (!publicConfigurations || publicConfigurations.length === 0) {
+            return res.status(200).json([]); // Return empty array if none found
+        }
+
+        res.status(200).json(publicConfigurations);
+
+    } catch (error) {
+        console.error('Error fetching public DP Configurations:', error);
+        res.status(500).json({ message: 'Server error while fetching public DP configurations.' });
+    }
+});
+
 // POST /api/dp-configurations - Create a new DP Configuration
 router.post('/', async (req, res) => {
     const {
@@ -71,27 +106,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-// GET /api/dp-configurations - Fetch all public DP Configurations (only slug and templateName)
-router.get('/', async (req, res) => {
-    try {
-        const publicConfigurations = await DpConfiguration.find(
-            { isPublic: true },
-            'slug templateName -_id' // Select slug and templateName, exclude _id
-        );
-
-        if (!publicConfigurations || publicConfigurations.length === 0) {
-            return res.status(200).json([]); // Return empty array if none found
-        }
-
-        res.status(200).json(publicConfigurations);
-
-    } catch (error) {
-        console.error('Error fetching public DP Configurations:', error);
-        res.status(500).json({ message: 'Server error while fetching public DP configurations.' });
-    }
-});
-
 // GET /api/dp-configurations/:slug - Fetch a single DP Configuration by slug
+// IMPORTANT: Define this AFTER any specific routes to avoid conflicts
 router.get('/:slug', async (req, res) => {
     try {
         const { slug } = req.params;
@@ -111,20 +127,6 @@ router.get('/:slug', async (req, res) => {
     } catch (error) {
         console.error(`Error fetching DP Configuration with slug ${req.params.slug}:`, error);
         res.status(500).json({ message: 'Server error while fetching DP configuration.' });
-        console.error(error);
-    }
-});
-// GET /api/dp-configurations/public - Get all public DP Configurations
-router.get('/public', async (req, res) => {
-    try {
-        const configurations = await DpConfiguration.find({});
-        res.status(200).json(configurations);
-    } catch (error) {
-        console.error('Error fetching DP configurations:', error);
-        res.status(500).json({
-            message: "Error fetching DP configurations",
-            error: error.message
-        });
     }
 });
 
