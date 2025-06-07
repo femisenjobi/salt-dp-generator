@@ -18,7 +18,9 @@ function App() {
           <Route path="/create-custom-dp" element={<CustomDpForm />} />
           {/* Route for custom DPs via Validator */}
           <Route path="/dp/custom/:id" element={<Validator />} />
-          {/* Route for predefined event DPs via Validator */}
+          {/* New route for DPs by slug */}
+          <Route path="/dp/:slug" element={<Validator />} />
+          {/* Route for predefined event DPs via Validator (should be last for top-level slugs) */}
           <Route path="/:eventKey" element={<Validator />} />
         </Routes>
       </Router>

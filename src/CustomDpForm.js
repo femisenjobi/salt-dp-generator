@@ -10,6 +10,7 @@ const CustomDpForm = () => {
   const [yPos, setYPos] = useState('0');
   const [logoImage, setLogoImage] = useState(''); // User will input this Cloudinary ID
   const [radius, setRadius] = useState('0'); // DpGenerator might expect string for 'max' or numbers
+  const [templateName, setTemplateName] = useState(''); // New state for template name
   const [slug, setSlug] = useState(''); // New state for slug
   const [slugError, setSlugError] = useState(''); // New state for slug validation error
   const [isPublic, setIsPublic] = useState(true); // New state for isPublic, default true
@@ -142,7 +143,7 @@ const CustomDpForm = () => {
       xPos: parseInt(xPos, 10),
       yPos: parseInt(yPos, 10),
       radius: radius, // radius can be 'max' or a number string
-      templateName: "User Custom DP", // Generic name as specified
+      templateName: templateName || "User Custom DP", // Use state or default
       customSlug: slug, // Add customSlug (user-provided slug)
       isPublic: isPublic, // Add isPublic
     };
@@ -196,6 +197,7 @@ const CustomDpForm = () => {
     radius: radius || '0', // DpGenerator handles '0' or 'max' or number string
     logoImage: logoImagePublicId || 'plain_pw7uoh', // Use logoImagePublicId, fallback to default
     mainImage: mainImagePublicId || 'sample', // Default main image if user hasn't uploaded (sampleImageFile removed)
+    templateName: templateName, // Pass templateName to DpGenerator
     isPreviewMode: true // Add this line
   };
 
@@ -222,6 +224,19 @@ const CustomDpForm = () => {
             <div className="mb-3">
               <label htmlFor="yPos" className="form-label">Logo Y Position</label>
               <input type="number" className="form-control" id="yPos" value={yPos} onChange={(e) => setYPos(e.target.value)} required />
+            </div>
+            {/* Template Name Field */}
+            <div className="mb-3">
+              <label htmlFor="templateName" className="form-label">Template Name</label>
+              <input
+                type="text"
+                className="form-control"
+                id="templateName"
+                value={templateName}
+                onChange={(e) => setTemplateName(e.target.value)}
+                placeholder="Enter a name for this template"
+                required
+              />
             </div>
             {/* New Slug Field */}
             <div className="mb-3">

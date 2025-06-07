@@ -90,3 +90,138 @@ describe('Homepage', () => {
     expect(screen.queryByText(/Custom Templates/i)).not.toBeInTheDocument();
   });
 });
+
+describe('Homepage - API Fetched DP Configurations', () => {
+  beforeEach(() => {
+    // Mock window.fetch for these tests
+    global.fetch = jest.fn();
+    jest.clearAllMocks(); // Clear fetch and any other mocks
+  });
+
+  afterEach(() => {
+    // Clean up the mock to ensure it doesn't interfere with other tests
+    global.fetch.mockRestore();
+  });
+
+  const mockApiData = [
+    { _id: '1', slug: 'public-dp-1', templateName: 'Public DP 1', mainImageCloudinaryId: 'pub_img_1', isPublic: true },
+    { _id: '2', slug: 'private-dp-1', templateName: 'Private DP 1', mainImageCloudinaryId: 'priv_img_1', isPublic: false },
+    { _id: '3', slug: 'public-dp-2', templateName: 'Public DP 2 (Undefined isPublic)', mainImageCloudinaryId: 'pub_img_2' }, // isPublic undefined
+  ];
+
+  test('calls /api/dp-configurations/public/all on mount and displays loading state', async () => {
+    global.fetch.mockImplementationOnce(() => new Promise(() => {})); // Keep it pending to check loading state
+    render(<Homepage />, { wrapper: MemoryRouter });
+    expect(global.fetch).toHaveBeenCalledWith('/api/dp-configurations/public/all');
+    expect(screen.getByText(/Loading configurations.../i)).toBeInTheDocument();
+  });
+
+  test('renders public and private DP sections if API returns mixed data', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockApiData,
+    });
+    render(<Homepage />, { wrapper: MemoryRouter });
+
+    await waitFor(() => {
+      expect(screen.getByText('User Generated Configurations')).toBeInTheDocument();
+      // Check for at least one public DP
+      expect(screen.getByText('Public DP 1')).toBeInTheDocument();
+      expect(screen.getByText('Public DP 2 (Undefined isPublic)')).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Your Private DPs')).toBeInTheDocument();
+      // Check for at least one private DP
+      expect(screen.getByText('Private DP 1')).toBeInTheDocument();
+    });
+  });
+
+  test('distributes DPs correctly into public and private sections', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockApiData,
+    });
+    render(<Homepage />, { wrapper: MemoryRouter });
+
+    // Check Public DPs
+    await waitFor(() => {
+      const publicSection = screen.getByText('User Generated Configurations').closest('div.container > div > h2').nextElementSibling;
+      expect(within(publicSection).getByText('Public DP 1')).toBeInTheDocument();
+      expect(within(publicSection).getByText('Public DP 2 (Undefined isPublic)')).toBeInTheDocument();
+      expect(within(publicSection).queryByText('Private DP 1')).not.toBeInTheDocument();
+    });
+
+    // Check Private DPs
+    await waitFor(() => {
+      // Need a robust way to select the section. Assuming structure: h2 followed by div.row
+      // This assumes "Your Private DPs" is present and followed by a div.row containing cards.
+      const privateSectionContainer = screen.getByText('Your Private DPs').closest('div.container > div > h2').parentElement; // Or use a more direct selector if possible
+      const privateSection = Array.from(privateSectionContainer.querySelectorAll('.card-title')).find(el => el.textContent === 'Private DP 1').closest('.row');
+
+      expect(within(privateSection).getByText('Private DP 1')).toBeInTheDocument();
+      expect(within(privateSection).queryByText('Public DP 1')).not.toBeInTheDocument();
+    });
+  });
+
+  test('displays error message if API call fails', async () => {
+    global.fetch.mockRejectedValueOnce(new Error('API Network Error'));
+    render(<Homepage />, { wrapper: MemoryRouter });
+    await waitFor(() => {
+      expect(screen.getByText('Failed to load DP configurations. Please try again later.')).toBeInTheDocument();
+    });
+  });
+
+  test('cards in both sections have correct "Customize" and "Share" links', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockApiData,
+    });
+    render(<Homepage />, { wrapper: MemoryRouter });
+
+    // Public DP 1
+    await waitFor(() => screen.getByText('Public DP 1'));
+    const publicDp1Card = screen.getByText('Public DP 1').closest('.card');
+    const publicCustomizeLink = within(publicDp1Card).getByRole('link', { name: /Customize/i });
+    expect(publicCustomizeLink).toHaveAttribute('href', '/dp/public-dp-1');
+
+    // Private DP 1
+    await waitFor(() => screen.getByText('Private DP 1'));
+    const privateDp1Card = screen.getByText('Private DP 1').closest('.card');
+    const privateCustomizeLink = within(privateDp1Card).getByRole('link', { name: /Customize/i });
+    expect(privateCustomizeLink).toHaveAttribute('href', '/dp/private-dp-1');
+    const privateShareLink = within(privateDp1Card).getByRole('link', { name: /Share/i });
+    expect(privateShareLink).toHaveAttribute('href', '/dp/private-dp-1');
+  });
+
+  test('shows "No public DP configurations found" if only private DPs exist or no DPs at all from API', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockApiData.filter(dp => dp.isPublic === false), // Only private DPs
+    });
+    render(<Homepage />, { wrapper: MemoryRouter });
+
+    await waitFor(() => {
+      expect(screen.getByText('No public DP configurations found.')).toBeInTheDocument();
+      expect(screen.getByText('Your Private DPs')).toBeInTheDocument();
+      expect(screen.getByText('Private DP 1')).toBeInTheDocument();
+    });
+  });
+
+  test('does not show "Your Private DPs" section if only public DPs exist or no DPs at all from API', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockApiData.filter(dp => dp.isPublic !== false), // Only public DPs
+    });
+    render(<Homepage />, { wrapper: MemoryRouter });
+
+    await waitFor(() => {
+      expect(screen.getByText('User Generated Configurations')).toBeInTheDocument();
+      expect(screen.getByText('Public DP 1')).toBeInTheDocument();
+      expect(screen.queryByText('Your Private DPs')).not.toBeInTheDocument();
+    });
+  });
+});
+
+// Helper to import 'within' if not already available
+import { within } from '@testing-library/react';
