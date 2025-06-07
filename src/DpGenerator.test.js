@@ -40,6 +40,8 @@ describe('DpGenerator', () => {
       expect(screen.queryByRole('link', { name: /Download/i })).not.toBeInTheDocument();
       expect(screen.queryByText(/Create your custom DP/i)).not.toBeInTheDocument(); // h3 title
       expect(screen.queryByAltText('Event Logo')).not.toBeInTheDocument(); // Top event logo
+      // Test for template name input not present in preview mode
+      expect(screen.queryByPlaceholderText('Enter Template Name')).not.toBeInTheDocument();
     });
 
     test('constructs correct Cloudinary URL for preview', () => {
@@ -93,6 +95,8 @@ describe('DpGenerator', () => {
       expect(screen.getByRole('button', { name: /Upload Your Picture/i })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: /Download/i })).toBeInTheDocument();
       expect(screen.getByText(/Create your custom DP/i)).toBeInTheDocument(); // h3 title
+      // Test for template name input present in interactive mode
+      expect(screen.getByPlaceholderText('Enter Template Name')).toBeInTheDocument();
     });
 
     test('constructs initial Cloudinary URL with overlay on mainImage prop', () => {
@@ -151,6 +155,14 @@ describe('DpGenerator', () => {
       expect(downloadLink).toHaveClass('disabled'); // or check href === '#'
       // Check that it does not contain fl_attachment initially if it's truly disabled
       expect(downloadLink.href).not.toContain('fl_attachment:my_dp');
+    });
+
+    test('typing in template name input updates its value', () => {
+      render(<DpGenerator {...defaultProps} isPreviewMode={false} />);
+      const templateNameInput = screen.getByPlaceholderText('Enter Template Name');
+      expect(templateNameInput.value).toBe(''); // Initial value
+      fireEvent.change(templateNameInput, { target: { value: 'My Awesome Template' } });
+      expect(templateNameInput.value).toBe('My Awesome Template');
     });
   });
 });

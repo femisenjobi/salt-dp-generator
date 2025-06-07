@@ -14,6 +14,8 @@ function DpGenerator({ width, height, xPos, yPos, mainImage, radius, logoImage, 
   // State for download link
   const [downloadLink, setDownloadLink] = useState('');
   const [loading, setLoading] = useState(false);
+  // State for template name
+  const [templateName, setTemplateName] = useState('');
 
   useEffect(() => {
     // This effect constructs the URL for the preview or updates non-preview based on inputs
@@ -110,6 +112,16 @@ function DpGenerator({ width, height, xPos, yPos, mainImage, radius, logoImage, 
           {/* Controls - only in non-preview mode */}
           {!isPreviewMode && (
             <>
+              <div className="row d-flex justify-content-center mb-3">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Template Name"
+                  value={templateName}
+                  onChange={(e) => setTemplateName(e.target.value)}
+                  style={{ maxWidth: '300px' }}
+                />
+              </div>
               <div className="row d-flex justify-content-center">
                 <h3>Create your custom DP</h3>
               </div>
