@@ -49,7 +49,8 @@ router.post('/', async (req, res) => {
         yPos,
         radius,
         templateName,
-        customSlug
+        customSlug,
+        isPublic // Destructure isPublic
     } = req.body;
 
     try {
@@ -58,15 +59,33 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: 'Missing required fields: mainImageCloudinaryId, logoImageCloudinaryId, width, height, xPos, yPos.' });
         }
 
-        let slugToUse = customSlug;
+        let slugToUse;
         if (customSlug) {
-            // Check if custom slug already exists
-            const existingBySlug = await DpConfiguration.findOne({ slug: customSlug });
+            // Sanitize customSlug: lowercase, replace spaces with hyphens, remove other problematic characters
+            let sanitizedSlug = customSlug
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, '');
+
+            if (!sanitizedSlug) { // If slug becomes empty after sanitization
+                sanitizedSlug = shortid.generate(); // Fallback to shortid
+            }
+
+            let existingBySlug = await DpConfiguration.findOne({ slug: sanitizedSlug });
             if (existingBySlug) {
-                return res.status(400).json({ message: 'This custom slug is already in use. Please choose another.' });
+                let counter = 1;
+                let newAttemptSlug;
+                do {
+                    newAttemptSlug = `${sanitizedSlug}-${counter}`;
+                    existingBySlug = await DpConfiguration.findOne({ slug: newAttemptSlug });
+                    counter++;
+                } while (existingBySlug);
+                slugToUse = newAttemptSlug;
+            } else {
+                slugToUse = sanitizedSlug;
             }
         } else {
-            // Generate a unique slug
+            // Generate a unique slug using shortid
             let newSlug = shortid.generate();
             let attempts = 0;
             // Ensure slug uniqueness (highly unlikely to collide with shortid, but good practice)
@@ -74,13 +93,17 @@ router.post('/', async (req, res) => {
                 newSlug = shortid.generate();
                 attempts++;
             }
-            if (await DpConfiguration.findOne({ slug: newSlug })) {
+            if (await DpConfiguration.findOne({ slug: newSlug })) { // Check one last time
                  return res.status(500).json({ message: 'Failed to generate a unique slug after multiple attempts.' });
             }
             slugToUse = newSlug;
         }
 
-        const newDpConfiguration = new DpConfiguration({
+        // Prepare data for new configuration
+        // Prepare data for new configuration
+        console.log('Value of isPublic from req.body:', req.body.isPublic); // Log 1: Value from req.body
+
+        const configData = {
             slug: slugToUse,
             mainImageCloudinaryId,
             logoImageCloudinaryId,
@@ -88,11 +111,27 @@ router.post('/', async (req, res) => {
             height,
             xPos,
             yPos,
-            radius, // Will use default from schema if not provided
-            templateName
-        });
+            radius, // Schema default applies if not in req.body or if radius is undefined
+            templateName,
+            // isPublic is handled below to be more explicit
+        };
+
+        // Explicitly set isPublic if provided in the request body, otherwise let schema default apply
+        if (typeof isPublic === 'boolean') {
+            configData.isPublic = isPublic;
+        }
+
+        console.log('Data object for DpConfiguration constructor:', configData); // Log 2: Data for constructor
+
+        const newDpConfiguration = new DpConfiguration(configData);
+
+        console.log('DpConfiguration object before save:', newDpConfiguration); // Log 3: Object before save
 
         const savedConfiguration = await newDpConfiguration.save();
+
+        console.log('DpConfiguration object after save (savedConfiguration):', savedConfiguration); // Log 4: Object after save
+        console.log('isPublic in savedConfiguration:', savedConfiguration.isPublic); // Log 5: isPublic in saved object
+
         res.status(201).json(savedConfiguration);
 
     } catch (error) {

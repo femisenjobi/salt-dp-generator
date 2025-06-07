@@ -54,7 +54,7 @@ const dpConfigurationSchema = new mongoose.Schema({
     },
     isPublic: {
         type: Boolean,
-        default: false
+        default: true
     }
 }, { timestamps: true }); // Add timestamps (createdAt, updatedAt)
 
