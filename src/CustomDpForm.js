@@ -15,13 +15,29 @@ const CustomDpForm = () => {
   const [slugError, setSlugError] = useState(''); // New state for slug validation error
   const [isPublic, setIsPublic] = useState(true); // New state for isPublic, default true
   const [logoImagePublicId, setLogoImagePublicId] = useState(''); // New state for logo image public ID
-
-  // const [sampleImageFile, setSampleImageFile] = useState(null); // No longer needed
   const [mainImagePublicId, setMainImagePublicId] = useState(''); // For the user's uploaded photo
   const [uploading, setUploading] = useState(false); // Combined uploading state for both images
-  // const [sampleImagePreview, setSampleImagePreview] = useState(''); // No longer needed, widget handles preview
 
   const navigate = useNavigate();
+
+  const handleTemplateNameChange = (e) => {
+    const value = e.target.value;
+    setTemplateName(value);
+    
+    // Auto-populate slug from template name
+    if (value) {
+      const sanitizedSlug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      setSlug(sanitizedSlug);
+      
+      // Validate the generated slug
+      const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+      if (sanitizedSlug === "" || slugRegex.test(sanitizedSlug)) {
+        setSlugError('');
+      } else {
+        setSlugError('Slug can only contain lowercase letters, numbers, and single hyphens. Cannot start/end with hyphen or have multiple hyphens.');
+      }
+    }
+  };
 
   const handleSlugChange = (event) => {
     const { value } = event.target;
@@ -71,21 +87,7 @@ const CustomDpForm = () => {
     logoWidget.open();
   };
 
-  // const handleFileChange = (event) => { // No longer needed
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     setSampleImageFile(file); // State removed
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       setSampleImagePreview(reader.result); // State removed
-  //     };
-  //     reader.readAsDataURL(file);
-  //     uploadSampleImageViaWidget(); // Call without arg
-  //   }
-  // };
-
   // Using the widget for upload as it provides more features like cropping
-  // Parameter fileToUpload is removed
   const uploadSampleImageViaWidget = () => {
     if (!window.cloudinary) {
       alert('Cloudinary widget is not loaded. Please check your internet connection or try refreshing.');
@@ -106,11 +108,9 @@ const CustomDpForm = () => {
         setUploading(false);
         if (!error && result && result.event === "success") {
           setMainImagePublicId(result.info.public_id);
-          // setSampleImageFile(null); // State removed
         } else if (error) {
           console.error('Upload error:', error);
           alert('Image upload failed. Please try again.');
-          // setSampleImagePreview(''); // State removed
         }
       }
     );
@@ -208,101 +208,212 @@ const CustomDpForm = () => {
       <div className="row">
         <div className="col-md-6">
           <form onSubmit={handleSubmit}>
-            {/* Form Inputs: Width, Height, XPos, YPos, LogoImage, Radius */}
+            {/* Template Name Field - Moved to top */}
             <div className="mb-3">
-              <label htmlFor="width" className="form-label">Logo Width</label>
-              <input type="number" className="form-control" id="width" value={width} onChange={(e) => setWidth(e.target.value)} required />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="height" className="form-label">Logo Height</label>
-              <input type="number" className="form-control" id="height" value={height} onChange={(e) => setHeight(e.target.value)} required />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="xPos" className="form-label">Logo X Position</label>
-              <input type="number" className="form-control" id="xPos" value={xPos} onChange={(e) => setXPos(e.target.value)} required />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="yPos" className="form-label">Logo Y Position</label>
-              <input type="number" className="form-control" id="yPos" value={yPos} onChange={(e) => setYPos(e.target.value)} required />
-            </div>
-            {/* Template Name Field */}
-            <div className="mb-3">
-              <label htmlFor="templateName" className="form-label">Template Name</label>
+              <label htmlFor="templateName" className="form-label">
+                Template Name
+              </label>
               <input
                 type="text"
                 className="form-control"
                 id="templateName"
                 value={templateName}
-                onChange={(e) => setTemplateName(e.target.value)}
+                onChange={handleTemplateNameChange}
                 placeholder="Enter a name for this template"
                 required
               />
             </div>
+
             {/* New Slug Field */}
             <div className="mb-3">
-              <label htmlFor="slug" className="form-label">Custom Slug (Optional)</label>
+              <label htmlFor="slug" className="form-label">
+                Custom Slug (Optional)
+              </label>
               <input
                 type="text"
-                className={`form-control ${slugError ? 'is-invalid' : ''}`}
+                className={`form-control ${slugError ? "is-invalid" : ""}`}
                 id="slug"
                 value={slug}
                 onChange={handleSlugChange}
                 placeholder="e.g., my-cool-dp (auto-generated if blank)"
               />
-              {slugError && <div className="invalid-feedback d-block">{slugError}</div>}
-            </div>
-            {/* New Is Public Checkbox */}
-            <div className="form-check mb-3">
-              <input type="checkbox" className="form-check-input" id="isPublic" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
-              <label className="form-check-label" htmlFor="isPublic">Make this DP configuration public?</label>
-            </div>
-            {/* Updated Logo Upload */}
-            <div className="mb-3">
-              <label className="form-label">Overlay Logo Image</label>
-              <button type="button" className="btn btn-secondary d-block mb-2" onClick={uploadLogoImageViaWidget} disabled={uploading}>
-                {uploading ? 'Uploading Logo...' : 'Upload Logo via Cloudinary'}
-              </button>
-              {logoImagePublicId && (
-                <p className="text-success mt-1">Logo uploaded: {logoImagePublicId}</p>
-              )}
-              {!logoImagePublicId && (
-                <p className="text-muted mt-1">No logo uploaded yet.</p>
-              )}
-            </div>
-            <div className="mb-3">
-              <label htmlFor="radius" className="form-label">Logo Radius (0 for square, 'max' for circle, or number)</label>
-              <input type="text" className="form-control" id="radius" value={radius} onChange={(e) => setRadius(e.target.value)} placeholder="e.g., 0, 50, max" required />
-            </div>
-            {/* Updated Main DP Image Upload */}
-            <div className="mb-3">
-              <label className="form-label">Main DP Image (Your Photo)</label>
-              <button type="button" className="btn btn-info d-block mb-2" onClick={uploadSampleImageViaWidget} disabled={uploading}>
-                {uploading && !mainImagePublicId ? 'Uploading Main Image...' : 'Upload Main Image via Cloudinary'}
-              </button>
-              {uploading && <div className="text-primary mt-2">Processing image... Please wait.</div>}
-              {!uploading && mainImagePublicId && (
-                 <p className="text-success mt-1">Main image uploaded: {mainImagePublicId}</p>
-              )}
-               {!uploading && !mainImagePublicId && (
-                <p className="text-muted mt-1">No main image uploaded yet.</p>
+              {slugError && (
+                <div className="invalid-feedback d-block">{slugError}</div>
               )}
             </div>
 
-            <button type="submit" className="btn btn-primary w-100 mt-3" disabled={uploading || !!slugError}>
-              {uploading ? 'Uploading...' : 'Create and Save DP Profile'}
+            {/* Width and Height side by side */}
+            <div className="row mb-3">
+              <div className="col-6">
+                <label htmlFor="width" className="form-label">
+                  Photo Width
+                </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="width"
+                  value={width}
+                  onChange={(e) => setWidth(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="col-6">
+                <label htmlFor="height" className="form-label">
+                  Photo Height
+                </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="height"
+                  value={height}
+                  onChange={(e) => setHeight(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* xPos and yPos side by side */}
+            <div className="row mb-3">
+              <div className="col-6">
+                <label htmlFor="xPos" className="form-label">
+                  Photo X Position
+                </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="xPos"
+                  value={xPos}
+                  onChange={(e) => setXPos(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="col-6">
+                <label htmlFor="yPos" className="form-label">
+                  Photo Y Position
+                </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="yPos"
+                  value={yPos}
+                  onChange={(e) => setYPos(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="radius" className="form-label">
+                Photo Radius (0 for square, 'max' for circle, or number)
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="radius"
+                value={radius}
+                onChange={(e) => setRadius(e.target.value)}
+                placeholder="e.g., 0, 50, max"
+                required
+              />
+            </div>
+
+            {/* New Is Public Checkbox */}
+            <div className="form-check mb-3">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="isPublic"
+                checked={isPublic}
+                onChange={(e) => setIsPublic(e.target.checked)}
+              />
+              <label className="form-check-label" htmlFor="isPublic">
+                Make this Public?
+              </label>
+            </div>
+
+            <div className="row mb-3">
+              <div className="col-6">
+                {/* Updated Main DP Image Upload */}
+                <label className="form-label">Main DP Image (DP Frame)</label>
+                <button
+                  type="button"
+                  className="btn btn-info d-block mb-2"
+                  onClick={uploadSampleImageViaWidget}
+                  disabled={uploading}
+                >
+                  {uploading && !mainImagePublicId
+                    ? "Uploading Main Image..."
+                    : "Upload Main Image via Cloudinary"}
+                </button>
+                {uploading && (
+                  <div className="text-primary mt-2">
+                    Processing image... Please wait.
+                  </div>
+                )}
+                {!uploading && mainImagePublicId && (
+                  //insert green checkmark icon
+                  <p className="text-success mt-1">Main image uploaded </p>
+                )}
+                {!uploading && !mainImagePublicId && (
+                  <p className="text-muted mt-1">No main image uploaded yet.</p>
+                )}
+              </div>
+              <div className="col-6">
+                {/* Updated Logo Upload */}
+                <label className="form-label">Your Logo or Image Sample</label>
+                <button
+                  type="button"
+                  className="btn btn-secondary d-block mb-2"
+                  onClick={uploadLogoImageViaWidget}
+                  disabled={uploading}
+                >
+                  {uploading
+                    ? "Uploading Logo..."
+                    : "Upload Logo via Cloudinary"}
+                </button>
+                {logoImagePublicId && (
+                  <p className="text-success mt-1">Logo uploaded </p>
+                )}
+                {!logoImagePublicId && (
+                  <p className="text-muted mt-1">No logo uploaded yet.</p>
+                )}
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary w-100 mt-3"
+              disabled={uploading || !!slugError}
+            >
+              {uploading ? "Uploading..." : "Create and Save DP Profile"}
             </button>
           </form>
         </div>
         <div className="col-md-6">
           <h4 className="text-center mb-3">Live Preview</h4>
-          <div style={{border: '1px solid #eee', padding: '10px', borderRadius: '5px', background: '#f9f9f9' }}>
+          <div
+            style={{
+              border: "1px solid #eee",
+              padding: "10px",
+              borderRadius: "5px",
+              background: "#f9f9f9",
+            }}
+          >
             {/* Render DpGenerator with props from form state for live preview */}
             <DpGenerator {...previewProps} />
           </div>
           {(!mainImagePublicId || !logoImagePublicId) && ( // Check logoImagePublicId
             <div className="alert alert-info mt-3" role="alert">
-              {!mainImagePublicId && <p className="mb-1">Upload a "Main DP Image" to see it in the preview.</p>}
-              {!logoImagePublicId && <p className="mb-0">Upload an "Overlay Logo Image" to see it in the preview.</p>}
+              {!mainImagePublicId && (
+                <p className="mb-1">
+                  Upload a "Main DP Image" to see it in the preview.
+                </p>
+              )}
+              {!logoImagePublicId && (
+                <p className="mb-0">
+                  Upload an "Overlay Logo Image" to see it in the preview.
+                </p>
+              )}
             </div>
           )}
         </div>

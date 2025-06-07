@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import data from "./data";
-import "./App.css"; // Assuming common styles are in App.css
+import "./App.css";
+import "./Homepage.css";
 
 function Homepage() {
   const templates = Object.entries(data); // Get an array of [key, value] pairs
@@ -45,20 +46,31 @@ function Homepage() {
 
   return (
     <div className="container mt-5">
-      <div className="text-center mb-4">
-        <h1>Choose a DP Template</h1>
+      <div className="homepage-header text-center mb-5">
+        <h1 className="display-4 fw-bold">Create Your Perfect Display Picture</h1>
         <p className="lead">
-          Select a template below to customize your display picture.
+          Choose from our templates or create your own custom design
         </p>
-        <Link to="/create-custom-dp" className="btn btn-success mb-4">
+        <Link to="/create-custom-dp" className="btn btn-success btn-lg mt-3">
           Create Custom DP
         </Link>
       </div>
 
       {/* Section for User Generated Configurations from API */}
-      <h2 className="text-center mb-4">User Generated Configurations</h2>
-      {loading && <p className="text-center">Loading configurations...</p>}
-      {error && <p className="text-center text-danger">{error}</p>}
+      <h2 className="section-title text-center">User Generated Configurations</h2>
+      {loading && (
+        <div className="text-center py-4">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-2">Loading configurations...</p>
+        </div>
+      )}
+      {error && (
+        <div className="alert alert-danger text-center" role="alert">
+          {error}
+        </div>
+      )}
       {!loading && !error && publicDpList.length > 0 && (
         <div className="row">
           {publicDpList.map((dpConfig) => (
@@ -78,12 +90,37 @@ function Homepage() {
                   </h5>
                   {/* Optional: Add description if available in dpConfig */}
                   {/* <p className="card-text">{dpConfig.description || 'A user generated DP.'}</p> */}
-                  <Link 
-                    to={`/dp/${dpConfig.slug}`} 
-                    state={{ dpConfig: dpConfig }}
-                    className="btn btn-primary">
-                    Customize
-                  </Link>
+                  <div className="card-actions">
+                    <Link 
+                      to={`/dp/${dpConfig.slug}`} 
+                      state={{ dpConfig: dpConfig }}
+                      className="btn btn-primary">
+                      Customize
+                    </Link>
+                    <button 
+                      onClick={() => {
+                        const shareUrl = `${window.location.origin}/dp/${dpConfig.slug}`;
+                        if (navigator.share) {
+                          navigator.share({
+                            title: dpConfig.templateName || 'DP Generator',
+                            text: 'Check out this display picture template!',
+                            url: shareUrl
+                          }).catch(err => console.error('Error sharing:', err));
+                        } else {
+                          // Fallback for browsers that don't support the Web Share API
+                          const tempInput = document.createElement('input');
+                          document.body.appendChild(tempInput);
+                          tempInput.value = shareUrl;
+                          tempInput.select();
+                          document.execCommand('copy');
+                          document.body.removeChild(tempInput);
+                          alert('Link copied to clipboard!');
+                        }
+                      }}
+                      className="btn btn-share">
+                      <i className="bi bi-share me-1"></i> Share
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -91,14 +128,17 @@ function Homepage() {
         </div>
       )}
       {!loading && !error && publicDpList.length === 0 && (
-        <p className="text-center">No public DP configurations found.</p>
+        <div className="alert alert-info text-center" role="alert">
+          <i className="bi bi-info-circle me-2"></i>
+          No public DP configurations found.
+        </div>
       )}
 
       {/* Section for Private DPs from API */}
       {!loading && !error && privateDpList.length > 0 && (
         <>
-          <hr className="my-4" />
-          <h2 className="text-center mb-4">Your Private DPs</h2>
+          <div className="section-divider"></div>
+          <h2 className="section-title text-center">Your Private DPs</h2>
           <div className="row">
             {privateDpList.map((dpConfig) => (
               <div
@@ -116,20 +156,38 @@ function Homepage() {
                     <h5 className="card-title">
                       {dpConfig.templateName || "Private DP"}
                     </h5>
-                    <Link
-                      to={`/dp/${dpConfig.slug}`}
-                      state={{ dpConfig: dpConfig, source: "privateDpLink" }}
-                      className="btn btn-secondary mr-2"
-                    >
-                      {" "}
-                      {/* Changed btn-primary to btn-secondary for differentiation */}
-                      Customize
-                    </Link>
-                    <Link to={`/dp/${dpConfig.slug}`} className="btn btn-info">
-                      {" "}
-                      {/* Share button */}
-                      Share
-                    </Link>
+                    <div className="card-actions">
+                      <Link
+                        to={`/dp/${dpConfig.slug}`}
+                        state={{ dpConfig: dpConfig, source: "privateDpLink" }}
+                        className="btn btn-secondary"
+                      >
+                        Customize
+                      </Link>
+                      <button 
+                        onClick={() => {
+                          const shareUrl = `${window.location.origin}/dp/${dpConfig.slug}`;
+                          if (navigator.share) {
+                            navigator.share({
+                              title: dpConfig.templateName || 'DP Generator',
+                              text: 'Check out this display picture template!',
+                              url: shareUrl
+                            }).catch(err => console.error('Error sharing:', err));
+                          } else {
+                            // Fallback for browsers that don't support the Web Share API
+                            const tempInput = document.createElement('input');
+                            document.body.appendChild(tempInput);
+                            tempInput.value = shareUrl;
+                            tempInput.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(tempInput);
+                            alert('Link copied to clipboard!');
+                          }
+                        }}
+                        className="btn btn-share">
+                        <i className="bi bi-share me-1"></i> Share
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -142,9 +200,9 @@ function Homepage() {
         <p className="text-center">You have no private DP configurations.</p>
       )} */}
 
-      <hr className="my-4" />
+      <div className="section-divider"></div>
       {/* Keep standard templates */}
-      <h2 className="text-center mb-4">Standard Templates</h2>
+      <h2 className="section-title text-center">Standard Templates</h2>
       <div className="row">
         {templates.map(([eventKey, template]) => (
           <div key={eventKey} className="col-md-4 mb-4">
@@ -165,9 +223,34 @@ function Homepage() {
                 <p className="card-text">
                   {template.description || "A cool template for your DP."}
                 </p>
-                <Link to={`/${eventKey}`} className="btn btn-primary">
-                  Customize
-                </Link>
+                <div className="card-actions">
+                  <Link to={`/${eventKey}`} className="btn btn-primary">
+                    Customize
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      const shareUrl = `${window.location.origin}/${eventKey}`;
+                      if (navigator.share) {
+                        navigator.share({
+                          title: template.name || eventKey.replace(/-/g, " ").replace(/(^|\s)\w/g, (l) => l.toUpperCase()),
+                          text: 'Check out this display picture template!',
+                          url: shareUrl
+                        }).catch(err => console.error('Error sharing:', err));
+                      } else {
+                        // Fallback for browsers that don't support the Web Share API
+                        const tempInput = document.createElement('input');
+                        document.body.appendChild(tempInput);
+                        tempInput.value = shareUrl;
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+                        alert('Link copied to clipboard!');
+                      }
+                    }}
+                    className="btn btn-share">
+                    <i className="bi bi-share me-1"></i> Share
+                  </button>
+                </div>
               </div>
             </div>
           </div>

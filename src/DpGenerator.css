@@ -1,0 +1,203 @@
+.dp-generator-container {
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.dp-header {
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.dp-preview-container {
+  padding: 0;
+  margin: 0;
+}
+
+.dp-image-container {
+  position: relative;
+  margin-bottom: 2rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.dp-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.3s;
+}
+
+.dp-image:hover {
+  transform: scale(1.02);
+}
+
+.event-logo {
+  max-height: 120px;
+  margin-bottom: 1.5rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dp-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-upload {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-upload:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+
+.btn-download {
+  background: linear-gradient(90deg, #11998e, #38ef7d);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-download:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+
+.btn-download.disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.btn-share {
+  background: linear-gradient(90deg, #4776E6, #8E54E9);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-share:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.template-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.instructions {
+  background-color: #f8f9fa;
+  border-left: 4px solid #6a11cb;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+  .dp-generator-container {
+    padding: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .dp-header {
+    padding: 1.5rem 1rem;
+  }
+  
+  .dp-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .dp-controls {
+    flex-direction: column;
+  }
+  
+  .d-flex.justify-content-between {
+    gap: 0.75rem;
+  }
+  
+  .btn-upload, .btn-download, .btn-share {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .event-logo {
+    max-height: 80px;
+  }
+  
+  .template-name {
+    font-size: 1.2rem;
+  }
+  
+  .instructions {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .dp-image-container {
+    margin-bottom: 1rem;
+  }
+  
+  /* Fix for mobile touch interactions */
+  .dp-image:hover {
+    transform: none;
+  }
+  
+  /* Improve tap targets */
+  .btn-upload, .btn-download, .btn-share {
+    min-height: 44px;
+  }
+  
+  /* Optimize loading spinner size */
+  .loading-spinner {
+    min-height: 250px;
+  }
+  
+  /* Add sticky controls for better mobile UX */
+  .dp-controls {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: 1px solid #eee;
+    z-index: 100;
+  }
+}

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react"; // Added useEffect
-
+import React, { useState, useEffect } from "react";
 import "./App.css";
+import "./DpGenerator.css";
 
 // Add isPreviewMode prop with a default value
 function DpGenerator({
@@ -103,93 +103,111 @@ function DpGenerator({
   };
 
   return (
-    // Adjust container and column classes based on isPreviewMode
-    <div
-      className={`container ${isPreviewMode ? "dp-preview-container p-0" : ""}`}
-    >
+    <div className={`container ${isPreviewMode ? "dp-preview-container" : "dp-generator-container"} px-md-4 px-2`}>
+      {!isPreviewMode && (
+        <div className="dp-header">
+          <h1 className="display-4 fw-bold">Create Your Display Picture</h1>
+          <p className="lead d-none d-md-block">Upload your photo and create a personalized display picture</p>
+          <p className="lead d-block d-md-none">Create your personalized DP</p>
+        </div>
+      )}
+      
       <div className="row">
-        <div
-          className={
-            isPreviewMode
-              ? "col-12"
-              : "col-md-8 col-lg-6 offset-md-2 offset-lg-3"
-          }
-        >
-          {/* Event Logo - only in non-preview mode (assuming it's specific to the event page) */}
-          {!isPreviewMode && (
-            <div className="row d-flex justify-content-center">
+        <div className={isPreviewMode ? "col-12" : "col-md-8 offset-md-2"}>
+          {/* Event Logo - only in non-preview mode */}
+          {!isPreviewMode && templateNameProp && (
+            <div className="text-center mb-4">
               <img
                 src={eventLogoUrl}
                 alt="Event Logo"
-                className="img-responsive"
-                style={{ height: "120px", marginBottom: "10px" }}
+                className="event-logo"
               />
+              <h2 className="template-name">{templateNameProp}</h2>
+            </div>
+          )}
+
+          {/* Instructions - only in non-preview mode */}
+          {!isPreviewMode && (
+            <div className="instructions mb-4">
+              <p><i className="bi bi-info-circle me-2"></i> <span className="d-none d-md-inline">Upload your photo to create a custom display picture with this template.</span><span className="d-inline d-md-none">Upload your photo to create a custom DP.</span></p>
             </div>
           )}
 
           {/* Main DP display area */}
-          <div className="row d-flex justify-content-center mb-3">
+          <div className="dp-image-container">
             {loading && !isPreviewMode ? (
-              <div
-                className="spinner-border"
-                role="status"
-                style={{ height: "200px", width: "200px", margin: "100px" }}
-              >
-                <span className="sr-only">Loading...</span>
+              <div className="loading-spinner">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
               </div>
             ) : (
               <img
                 src={generatedImageUrl}
                 alt="Generated DP"
-                className="img-responsive"
-                style={{
-                  height: isPreviewMode ? "auto" : "400px",
-                  maxWidth: "100%",
-                  border: "1px solid #eee",
-                }}
+                className="dp-image"
               />
             )}
           </div>
 
           {/* Controls - only in non-preview mode */}
           {!isPreviewMode && (
-            <>
-              {/* Display templateNameProp if available */}
-              {templateNameProp && (
-                <div className="row d-flex justify-content-center mb-2">
-                  <h4>Template: {templateNameProp}</h4>
+            <div className="dp-controls">
+              <div className="d-flex justify-content-between flex-wrap">
+                <button
+                  onClick={uploadWidget}
+                  className="btn btn-upload mb-2 mb-md-0"
+                  disabled={loading}
+                >
+                  <i className="bi bi-cloud-upload me-2"></i>
+                  <span className="d-none d-md-inline">{uploadedUserPhotoId ? "Change Your Picture" : "Upload Your Picture"}</span>
+                  <span className="d-inline d-md-none">{uploadedUserPhotoId ? "Change Photo" : "Upload Photo"}</span>
+                </button>
+                <a
+                  href={downloadLink || "#"}
+                  download="MyCustomDP.jpg"
+                  className={`btn btn-download mb-2 mb-md-0 ${downloadLink ? "" : "disabled"}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="bi bi-download me-2"></i>
+                  Download
+                </a>
+                <button
+                  onClick={() => {
+                    if (window.navigator.share) {
+                      window.navigator.share({
+                        title: templateNameProp || 'My Custom DP',
+                        text: 'Check out my custom display picture!',
+                        url: window.location.href
+                      })
+                      .catch(err => console.error('Error sharing:', err));
+                    } else {
+                      // Fallback for browsers that don't support the Web Share API
+                      const tempInput = document.createElement('input');
+                      document.body.appendChild(tempInput);
+                      tempInput.value = window.location.href;
+                      tempInput.select();
+                      document.execCommand('copy');
+                      document.body.removeChild(tempInput);
+                      alert('Link copied to clipboard!');
+                    }
+                  }}
+                  className="btn btn-share"
+                >
+                  <i className="bi bi-share me-2"></i>
+                  Share
+                </button>
+              </div>
+              
+              {!uploadedUserPhotoId && (
+                <div className="alert alert-info mt-3" role="alert">
+                  <i className="bi bi-lightbulb me-2"></i>
+                  <span className="d-none d-md-inline">Upload your photo to enable the download button.</span>
+                  <span className="d-inline d-md-none">Upload to enable download.</span>
                 </div>
               )}
-              {/* Removed template name input field */}
-              <div className="row d-flex justify-content-center">
-                <h3>Create your custom DP</h3>
-              </div>
-              <div className="row d-flex justify-content-center">
-                <div className="main">
-                  <div className="upload d-flex justify-content-around">
-                    <button
-                      onClick={uploadWidget}
-                      className="upload-button btn btn-primary"
-                    >
-                      {uploadedUserPhotoId
-                        ? "Change Your Picture"
-                        : "Upload Your Picture"}
-                    </button>
-                    <a
-                      href={downloadLink || "#"}
-                      download="MyCustomDP.jpg"
-                      className={`btn btn-primary ${
-                        downloadLink ? "" : "disabled"
-                      } ml-3`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Download
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </>
+            </div>
           )}
         </div>
       </div>
