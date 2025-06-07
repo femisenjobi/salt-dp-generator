@@ -73,32 +73,58 @@ const CustomDpForm = () => {
       return;
     }
     if (!logoImage) {
-        alert('Please provide a Cloudinary Public ID for the overlay logo.');
-        return;
+      alert('Please provide a Cloudinary Public ID for the overlay logo.');
+      return;
     }
 
-    const newCustomDp = {
-      // Ensure values are parsed correctly for storage
-      width: parseInt(width, 10) || 0,
-      height: parseInt(height, 10) || 0,
-      xPos: parseInt(xPos, 10) || 0,
-      yPos: parseInt(yPos, 10) || 0,
-      logoImage,
-      radius: radius, // Keep as string if 'max' is a possibility, or parse if only numbers
-      mainImage: mainImagePublicId,
-      name: `Custom DP ${Date.now()}`,
-      description: 'User-created custom DP configuration.',
+    const payload = {
+      mainImageCloudinaryId: mainImagePublicId,
+      logoImageCloudinaryId: logoImage,
+      width: parseInt(width, 10),
+      height: parseInt(height, 10),
+      xPos: parseInt(xPos, 10),
+      yPos: parseInt(yPos, 10),
+      radius: radius, // radius can be 'max' or a number string
+      templateName: "User Custom DP", // Generic name as specified
     };
 
+    const apiUrl = 'http://localhost:3002/api/dp-configurations';
+
     try {
-      const existingDps = JSON.parse(localStorage.getItem('customDpList')) || [];
-      const updatedDps = [...existingDps, newCustomDp];
-      localStorage.setItem('customDpList', JSON.stringify(updatedDps));
-      alert('Custom DP saved successfully!');
-      navigate('/');
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+      .then(async response => {
+        if (response.ok) { // Check for 2xx status codes, typically 201 for POST
+          // const data = await response.json(); // Assuming backend sends back the created object or some confirmation
+          alert('Custom DP saved successfully to database!');
+          navigate('/');
+        } else {
+          // Try to parse error message from backend if available
+          response.json().then(errorData => {
+            const errorMessage = errorData.message || `HTTP error! status: ${response.status}`;
+            alert(`Failed to save custom DP to database. Error: ${errorMessage}`);
+            console.error('Failed to save custom DP:', errorMessage);
+          }).catch(() => {
+            // Fallback if response is not JSON or error parsing JSON
+            alert(`Failed to save custom DP to database. HTTP error! status: ${response.status}`);
+            console.error('Failed to save custom DP, and error response was not valid JSON. Status:', response.status);
+          });
+        }
+      })
+      .catch(networkError => {
+        // Handle network errors (e.g., server down, no internet)
+        console.error('Network error:', networkError);
+        alert(`Failed to save custom DP due to a network error: ${networkError.message}`);
+      });
     } catch (error) {
-      console.error('Failed to save custom DP to localStorage:', error);
-      alert('Failed to save custom DP. Please try again.');
+      // Catch any synchronous errors not related to fetch (though less likely here)
+      console.error('Error in handleSubmit:', error);
+      alert(`An unexpected error occurred: ${error.message}`);
     }
   };
 
