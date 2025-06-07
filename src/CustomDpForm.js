@@ -88,7 +88,7 @@ const CustomDpForm = () => {
       templateName: "User Custom DP", // Generic name as specified
     };
 
-    const apiUrl = 'http://localhost:3002/api/dp-configurations';
+    const apiUrl = '/api/dp-configurations';
 
     try {
       fetch(apiUrl, {

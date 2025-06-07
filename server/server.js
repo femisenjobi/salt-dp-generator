@@ -1,5 +1,6 @@
 require('dotenv').config(); // Load environment variables at the very top
 const express = require('express');
+const path = require("path");
 const cors = require('cors');
 const connectDB = require('./db'); // Import DB connection function
 const cloudinary = require('./cloudinaryConfig'); // Import Cloudinary configured instance
@@ -24,6 +25,16 @@ app.get('/', (req, res) => {
 app.use('/api/dp-configurations', dpConfigurationRoutes);
 
 // Global Error Handler (very basic example, can be expanded)
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, "..", "build")));
+
+// The "catchall" handler: for any request that doesnt
+// match one above, send back Reacts index.html file.
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "build", "index.html"));
+});
+
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('Something broke!');

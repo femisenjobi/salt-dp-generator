@@ -14,7 +14,7 @@ function Homepage() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://localhost:3002/api/dp-configurations');
+        const response = await fetch('/api/dp-configurations');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
