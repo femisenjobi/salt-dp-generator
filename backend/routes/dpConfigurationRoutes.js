@@ -71,4 +71,18 @@ router.post('/', async (req, res) => {
     }
 });
 
+// GET /api/dp-configurations/public - Get all public DP Configurations
+router.get('/public', async (req, res) => {
+    try {
+        const configurations = await DpConfiguration.find({});
+        res.status(200).json(configurations);
+    } catch (error) {
+        console.error('Error fetching DP configurations:', error);
+        res.status(500).json({
+            message: "Error fetching DP configurations",
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
