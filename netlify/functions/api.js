@@ -5,7 +5,6 @@ const connectDB = require('../../server/db');
 const DpConfiguration = require('../../server/models/DpConfiguration');
 const shortid = require('shortid');
 
-// Initialize Express app
 const app = express();
 
 // Connect to MongoDB
@@ -15,26 +14,39 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
-// Log all requests to debug
+// Log all requests
 app.use((req, res, next) => {
-  console.log(`Request: ${req.method} ${req.path}`);
+  console.log(`Request: ${req.method} ${req.originalUrl} (path: ${req.path})`);
   next();
 });
 
-// Root endpoint
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the Custom DP Backend API!' });
+// Strip the /.netlify/functions/api prefix if present
+app.use((req, res, next) => {
+  if (req.path.startsWith('/.netlify/functions/api')) {
+    req.url = req.url.replace('/.netlify/functions/api', '');
+  }
+  next();
 });
 
-// Test endpoint
-app.get('/test', (req, res) => {
-  res.json({ message: 'API is working!' });
+// GET /dp-configurations - Fetch all public DP Configurations
+app.get('/dp-configurations', async (req, res) => {
+  try {
+    console.log('Fetching all public DP configurations');
+    const publicConfigurations = await DpConfiguration.find({});
+    console.log(`Found ${publicConfigurations.length} configurations`);
+    res.status(200).json(publicConfigurations || []);
+  } catch (error) {
+    console.error('Error fetching DP Configurations:', error);
+    res.status(500).json({ message: 'Server error while fetching DP configurations.' });
+  }
 });
 
 // GET /dp-configurations/public/all - Get all DP Configurations
 app.get('/dp-configurations/public/all', async (req, res) => {
   try {
+    console.log('Fetching all DP configurations');
     const configurations = await DpConfiguration.find({});
+    console.log(`Found ${configurations.length} configurations`);
     res.status(200).json(configurations);
   } catch (error) {
     console.error('Error fetching DP configurations:', error);
@@ -45,21 +57,9 @@ app.get('/dp-configurations/public/all', async (req, res) => {
   }
 });
 
-// GET /dp-configurations - Fetch all public DP Configurations
-app.get('/dp-configurations', async (req, res) => {
-  try {
-    const publicConfigurations = await DpConfiguration.find(
-      { isPublic: true },
-      'slug templateName mainImageCloudinaryId logoImageCloudinaryId width height xPos yPos radius');
-    res.status(200).json(publicConfigurations || []);
-  } catch (error) {
-    console.error('Error fetching public DP Configurations:', error);
-    res.status(500).json({ message: 'Server error while fetching public DP configurations.' });
-  }
-});
-
 // POST /dp-configurations - Create a new DP Configuration
 app.post('/dp-configurations', async (req, res) => {
+  console.log('Creating new DP configuration');
   const {
     mainImageCloudinaryId,
     logoImageCloudinaryId,
@@ -133,6 +133,7 @@ app.post('/dp-configurations', async (req, res) => {
 
     const newDpConfiguration = new DpConfiguration(configData);
     const savedConfiguration = await newDpConfiguration.save();
+    console.log('DP configuration created successfully');
     res.status(201).json(savedConfiguration);
 
   } catch (error) {
@@ -149,16 +150,20 @@ app.post('/dp-configurations', async (req, res) => {
 app.get('/dp-configurations/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
+    console.log(`Fetching DP configuration with slug: ${slug}`);
     const configuration = await DpConfiguration.findOne({ slug });
 
     if (!configuration) {
+      console.log(`Configuration with slug ${slug} not found`);
       return res.status(404).json({ message: 'Configuration not found.' });
     }
 
     if (!configuration.isPublic) {
+      console.log(`Configuration with slug ${slug} is not public`);
       return res.status(404).json({ message: 'Configuration not public.' });
     }
 
+    console.log(`Found configuration with slug ${slug}`);
     res.status(200).json(configuration);
   } catch (error) {
     console.error(`Error fetching DP Configuration with slug ${req.params.slug}:`, error);
@@ -166,8 +171,19 @@ app.get('/dp-configurations/:slug', async (req, res) => {
   }
 });
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ message: 'Welcome to the Custom DP Backend API!' });
+});
+
+// Test endpoint
+app.get('/test', (req, res) => {
+  res.json({ message: 'API is working!' });
+});
+
 // Catch-all route for any other API endpoints
 app.all('*', (req, res) => {
+  console.log(`404 Not Found: ${req.method} ${req.path}`);
   res.status(404).json({ 
     message: "API endpoint not found", 
     path: req.path,
@@ -176,7 +192,5 @@ app.all('*', (req, res) => {
   });
 });
 
-// Export the serverless function
-module.exports.handler = serverless(app, {
-  basePath: ''
-});
+// Export the serverless function with path stripping
+module.exports.handler = serverless(app);

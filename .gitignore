@@ -24,3 +24,4 @@ yarn-error.log*
 # From server/.gitignore
 node_modules/
 .env
+.env.sample
