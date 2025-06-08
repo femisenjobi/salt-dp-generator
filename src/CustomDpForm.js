@@ -158,9 +158,9 @@ const CustomDpForm = () => {
       })
       .then(async response => {
         if (response.ok) { // Check for 2xx status codes, typically 201 for POST
-          // const data = await response.json(); // Assuming backend sends back the created object or some confirmation
+          const data = await response.json(); // Assuming backend sends back the created object or some confirmation
           alert('Custom DP saved successfully to database!');
-          navigate('/');
+          navigate(`/dp/${data.slug}`);
         } else {
           // Try to parse error message from backend if available
           response.json().then(errorData => {
