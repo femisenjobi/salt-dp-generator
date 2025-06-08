@@ -123,10 +123,7 @@ const CustomDpForm = () => {
       alert('Please upload a sample image first for the main DP.');
       return;
     }
-    if (!logoImagePublicId) { // Changed from logoImage to logoImagePublicId
-      alert('Please upload an overlay logo image.'); // Updated alert message
-      return;
-    }
+    // Logo image is now optional
 
     // Prevent submission if there's a slug error
     if (slugError) {
@@ -136,7 +133,7 @@ const CustomDpForm = () => {
 
     const payload = {
       mainImageCloudinaryId: mainImagePublicId,
-      logoImageCloudinaryId: logoImagePublicId, // Use logoImagePublicId
+      logoImageCloudinaryId: logoImagePublicId || 'plain_pw7uoh', // Use logoImagePublicId or default
       width: parseInt(width, 10),
       height: parseInt(height, 10),
       xPos: parseInt(xPos, 10),
@@ -361,7 +358,7 @@ const CustomDpForm = () => {
               </div>
               <div className="col-6">
                 {/* Updated Logo Upload */}
-                <label className="form-label">Your Logo or Image Sample</label>
+                <label className="form-label">Your Logo (Optional)</label>
                 <button
                   type="button"
                   className="btn btn-secondary d-block mb-2"
@@ -376,7 +373,7 @@ const CustomDpForm = () => {
                   <p className="text-success mt-1">Logo uploaded </p>
                 )}
                 {!logoImagePublicId && (
-                  <p className="text-muted mt-1">No logo uploaded yet.</p>
+                  <p className="text-muted mt-1">Default logo will be used if none uploaded.</p>
                 )}
               </div>
             </div>
@@ -403,18 +400,11 @@ const CustomDpForm = () => {
             {/* Render DpGenerator with props from form state for live preview */}
             <DpGenerator {...previewProps} />
           </div>
-          {(!mainImagePublicId || !logoImagePublicId) && ( // Check logoImagePublicId
+          {!mainImagePublicId && (
             <div className="alert alert-info mt-3" role="alert">
-              {!mainImagePublicId && (
-                <p className="mb-1">
-                  Upload a "Main DP Image" to see it in the preview.
-                </p>
-              )}
-              {!logoImagePublicId && (
-                <p className="mb-0">
-                  Upload an "Overlay Logo Image" to see it in the preview.
-                </p>
-              )}
+              <p className="mb-0">
+                Upload a "Main DP Image" to see it in the preview.
+              </p>
             </div>
           )}
         </div>

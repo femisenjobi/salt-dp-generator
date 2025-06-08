@@ -74,9 +74,12 @@ app.post('/dp-configurations', async (req, res) => {
   } = req.body;
 
   try {
-    if (!mainImageCloudinaryId || !logoImageCloudinaryId || !width || !height) {
-      return res.status(400).json({ message: 'Missing required fields: mainImageCloudinaryId, logoImageCloudinaryId, width, height, xPos, yPos.' });
+    if (!mainImageCloudinaryId || !width || !height) {
+      return res.status(400).json({ message: 'Missing required fields: mainImageCloudinaryId, width, height, xPos, yPos.' });
     }
+    
+    // Set default logo if not provided
+    const logoToUse = logoImageCloudinaryId || 'plain_pw7uoh';
 
     let slugToUse;
     if (customSlug) {
@@ -118,7 +121,7 @@ app.post('/dp-configurations', async (req, res) => {
     const configData = {
       slug: slugToUse,
       mainImageCloudinaryId,
-      logoImageCloudinaryId,
+      logoImageCloudinaryId: logoToUse,
       width,
       height,
       xPos,

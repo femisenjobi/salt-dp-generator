@@ -25,3 +25,20 @@ yarn-error.log*
 node_modules/
 .env
 .env.sample
+
+# Local Netlify folder
+.netlify
+
+# IDE files
+.idea/
+.vscode/
+
+# Logs
+logs
+*.log
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
