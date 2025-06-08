@@ -44,8 +44,8 @@ function Homepage() {
         setPrivateDpList(privateDps);
         setError(null);
       } catch (e) {
-        console.error("Failed to fetch DP configurations:", e); // Generic error message
-        setError("Failed to load DP configurations. Please try again later.");
+        console.error("Failed to fetch DPs:", e); // Generic error message
+        setError("Failed to load DPs. Please try again later.");
         setPublicDpList([]);
         setPrivateDpList([]); // Ensure private list is also empty on error
       } finally {
@@ -142,7 +142,7 @@ function Homepage() {
       {!loading && !error && publicDpList.length === 0 && (
         <div className="alert alert-info text-center" role="alert">
           <i className="bi bi-info-circle me-2"></i>
-          No public DP configurations found.
+          No public dp designs found
         </div>
       )}
 
@@ -209,7 +209,7 @@ function Homepage() {
       )}
       {/* Optional: Message if no private DPs found */}
       {/* {!loading && !error && privateDpList.length === 0 && publicDpList.length > 0 && ( // Only show if public DPs were loaded, to avoid confusion during loading/error states
-        <p className="text-center">You have no private DP configurations.</p>
+        <p className="text-center">You have no private DPs.</p>
       )} */}
 
       <div className="section-divider"></div>

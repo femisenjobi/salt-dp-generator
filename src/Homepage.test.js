@@ -91,7 +91,7 @@ describe('Homepage', () => {
   });
 });
 
-describe('Homepage - API Fetched DP Configurations', () => {
+describe('Homepage - API Fetched DPs', () => {
   beforeEach(() => {
     // Mock window.fetch for these tests
     global.fetch = jest.fn();
@@ -161,7 +161,7 @@ describe('Homepage - API Fetched DP Configurations', () => {
     global.fetch.mockRejectedValueOnce(new Error('API Network Error'));
     render(<Homepage />, { wrapper: MemoryRouter });
     await waitFor(() => {
-      expect(screen.getByText('Failed to load DP configurations. Please try again later.')).toBeInTheDocument();
+      expect(screen.getByText('Failed to load DPs. Please try again later.')).toBeInTheDocument();
     });
   });
 
@@ -187,7 +187,7 @@ describe('Homepage - API Fetched DP Configurations', () => {
     expect(privateShareLink).toHaveAttribute('href', '/dp/private-dp-1');
   });
 
-  test('shows "No public DP configurations found" if only private DPs exist or no DPs at all from API', async () => {
+  test('shows "No public DPs found" if only private DPs exist or no DPs at all from API', async () => {
     global.fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => mockApiData.filter(dp => dp.isPublic === false), // Only private DPs
@@ -195,7 +195,7 @@ describe('Homepage - API Fetched DP Configurations', () => {
     render(<Homepage />, { wrapper: MemoryRouter });
 
     await waitFor(() => {
-      expect(screen.getByText('No public DP configurations found.')).toBeInTheDocument();
+      expect(screen.getByText('No public dp designs found')).toBeInTheDocument();
       expect(screen.getByText('Your Private DPs')).toBeInTheDocument();
       expect(screen.getByText('Private DP 1')).toBeInTheDocument();
     });

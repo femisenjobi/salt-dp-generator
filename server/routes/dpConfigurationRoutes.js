@@ -3,7 +3,7 @@ const router = express.Router();
 const DpConfiguration = require('../models/DpConfiguration');
 const shortid = require('shortid');
 
-// GET /api/dp-configurations - Fetch all public DP Configurations (only slug and templateName)
+// GET /api/dp-configurations - Fetch all public DPs (only slug and templateName)
 router.get('/', async (req, res) => {
     try {
         const publicConfigurations = await DpConfiguration.find(
@@ -17,8 +17,8 @@ router.get('/', async (req, res) => {
         res.status(200).json(publicConfigurations);
 
     } catch (error) {
-        console.error('Error fetching public DP Configurations:', error);
-        res.status(500).json({ message: 'Server error while fetching public DP configurations.' });
+        console.error('Error fetching public DPs:', error);
+        res.status(500).json({ message: 'Server error while fetching public DPs.' });
     }
 });
 
