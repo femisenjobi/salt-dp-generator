@@ -55,6 +55,11 @@ const dpConfigurationSchema = new mongoose.Schema({
     isPublic: {
         type: Boolean,
         default: true
+    },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 }, { timestamps: true }); // Add timestamps (createdAt, updatedAt)
 

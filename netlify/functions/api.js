@@ -3,7 +3,10 @@ const serverless = require('serverless-http');
 const cors = require('cors');
 const connectDB = require('../../server/db');
 const DpConfiguration = require('../../server/models/DpConfiguration');
+const User = require('../../server/models/User'); // Added User model
 const shortid = require('shortid');
+const jwt = require('jsonwebtoken'); // Added jsonwebtoken
+const bcrypt = require('bcryptjs'); // Added bcryptjs
 
 const app = express();
 
@@ -19,6 +22,25 @@ app.use((req, res, next) => {
   console.log(`Request: ${req.method} ${req.originalUrl} (path: ${req.path})`);
   next();
 });
+
+// Middleware to authenticate JWT token
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+  if (token == null) {
+    return res.status(401).json({ message: 'Authentication token required.' });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      console.error('JWT verification error:', err);
+      return res.status(403).json({ message: 'Token is not valid or has expired.' });
+    }
+    req.user = user; // Add decoded user payload to request object
+    next();
+  });
+};
 
 // Strip the /.netlify/functions/api prefix if present
 app.use((req, res, next) => {
@@ -58,8 +80,8 @@ app.get('/dp-configurations/public/all', async (req, res) => {
 });
 
 // POST /dp-configurations - Create a new DP Configuration
-app.post('/dp-configurations', async (req, res) => {
-  console.log('Creating new DP configuration');
+app.post('/dp-configurations', authenticateToken, async (req, res) => { // Added authenticateToken middleware
+  console.log('Creating new DP configuration for user:', req.user.id); // Log which user is creating
   const {
     mainImageCloudinaryId,
     logoImageCloudinaryId,
@@ -127,7 +149,8 @@ app.post('/dp-configurations', async (req, res) => {
       xPos,
       yPos,
       radius,
-      templateName
+      templateName,
+      userId: req.user.id // Associate with authenticated user
     };
 
     if (typeof isPublic === 'boolean') {
@@ -136,7 +159,7 @@ app.post('/dp-configurations', async (req, res) => {
 
     const newDpConfiguration = new DpConfiguration(configData);
     const savedConfiguration = await newDpConfiguration.save();
-    console.log('DP configuration created successfully');
+    console.log('DP configuration created successfully for user:', req.user.id);
     res.status(201).json(savedConfiguration);
 
   } catch (error) {
@@ -182,6 +205,79 @@ app.get('/', (req, res) => {
 // Test endpoint
 app.get('/test', (req, res) => {
   res.json({ message: 'API is working!' });
+});
+
+// POST /auth/register - Register a new user
+app.post('/auth/register', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required.' });
+  }
+
+  try {
+    // Check if username already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Username already exists.' });
+    }
+
+    // Create new user instance (password will be hashed by pre-save hook)
+    const newUser = new User({ username, password });
+    await newUser.save();
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: newUser._id, username: newUser.username },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' } // Token expires in 1 hour
+    );
+
+    res.status(201).json({ token });
+
+  } catch (error) {
+    console.error('Error during user registration:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: 'Validation Error', errors: error.errors });
+    }
+    res.status(500).json({ message: 'Server error during registration.' });
+  }
+});
+
+// POST /auth/login - Login an existing user
+app.post('/auth/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required.' });
+  }
+
+  try {
+    // Find user by username
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials.' }); // User not found
+    }
+
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid credentials.' }); // Password doesn't match
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user._id, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' } // Token expires in 1 hour
+    );
+
+    res.status(200).json({ token });
+
+  } catch (error) {
+    console.error('Error during user login:', error);
+    res.status(500).json({ message: 'Server error during login.' });
+  }
 });
 
 // Catch-all route for any other API endpoints

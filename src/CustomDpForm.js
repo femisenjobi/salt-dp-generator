@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DpGenerator from './DpGenerator'; // Import DpGenerator
+import { useAuth } from './AuthContext'; // Import useAuth
 
 const CustomDpForm = () => {
+  const { token } = useAuth(); // Get token from AuthContext
   // Initial state values are mostly numbers or string representations of numbers
   const [width, setWidth] = useState('300');
   const [height, setHeight] = useState('300');
@@ -149,11 +151,16 @@ const CustomDpForm = () => {
       '/api/dp-configurations';
 
     try {
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       fetch(apiUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
         body: JSON.stringify(payload),
       })
       .then(async response => {
